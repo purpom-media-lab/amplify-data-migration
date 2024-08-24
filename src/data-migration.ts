@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 import yargs, { Argv } from "yargs";
 import { hideBin } from "yargs/helpers";
-import { createInitCommand } from "./commands/init/index.js";
 import * as path from "node:path";
 import * as fsp from "node:fs/promises";
 import { fileURLToPath } from "node:url";
+import { createInitCommand } from "./commands/init/index.js";
+import { createDestroyCommand } from "./commands/destroy/index.js";
 
 const packageJson = JSON.parse(
   await fsp.readFile(
@@ -23,6 +24,7 @@ export const createMainParser = (libraryVersion: string): Argv => {
     .strict()
     .scriptName(path.parse(process.argv[1]).name)
     .command(createInitCommand())
+    .command(createDestroyCommand())
     .help()
     .demandCommand()
     .strictCommands()
