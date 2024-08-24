@@ -1,6 +1,8 @@
 import type { ExportContext, MigrationContext } from "./context.js";
 
 export interface Migration {
+  readonly name: string;
+  readonly timestamp: number;
   /**
    * run関数でマイグレーションを実行する際に利用するエクスポートデータを作成します。
    * DynamnoDBテーブルのキーが変更される場合にはDynamoDBテーブルがreplaceされるので、
@@ -9,7 +11,7 @@ export interface Migration {
    *
    * @return モデル名を属性名としてエクスポートされたデータのS3キーを値とするオブジェクト
    */
-  export(context: ExportContext): Promise<Record<string, string>>;
+  export?(context: ExportContext): Promise<Record<string, string>>;
   /**
    * データのマイグレーションを実行します。
    * export関数でスキーマ変更前のテーブルデータをエクスポートしている場合は、そのデータを利用することもできます。
