@@ -23,7 +23,7 @@ export interface ModelClient {
    */
   updateModel(
     modelName: string,
-    transformer: ModelTransformer,
+    transformer: ModelTransformer<any, any>,
     options?: {
       filter?: {
         expression: string;

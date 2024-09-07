@@ -3,6 +3,8 @@ import { printer } from "../../printer.js";
 import { CommandMiddleware } from "../../command_middleware.js";
 import { MigrationTableClient } from "../../migration/migration_table_client.js";
 import { MigrationRunner } from "../../migration/migration_runner.js";
+import { DefaultDynamoDBTableProvider } from "../../migration/default_dynamodb_table_provider.js";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 
 type MigrateCommandOptionsCamelCase = {
   branch: string;
@@ -40,12 +42,17 @@ export class MigrateCommand
    */
   async handler(args: ArgumentsCamelCase<MigrateCommandOptionsCamelCase>) {
     const { branch, appId, migrationsDir } = args;
+    const dynamoDBClient = new DynamoDBClient();
     const migrationTableClient = new MigrationTableClient(appId, branch);
-    const migrationRunner = new MigrationRunner({
+    const dynamoDBTableProvider = new DefaultDynamoDBTableProvider({
       appId,
       branch,
+    });
+    const migrationRunner = new MigrationRunner({
       migrationsDir,
+      dynamoDBClient,
       migrationTableClient,
+      dynamoDBTableProvider,
     });
     await migrationRunner.run();
   }

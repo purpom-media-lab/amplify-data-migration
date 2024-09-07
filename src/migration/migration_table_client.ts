@@ -7,6 +7,13 @@ import {
 } from "@aws-sdk/client-dynamodb";
 import type { Migration } from "../types/migration.js";
 
+type MigrationRecord = {
+  action: "run" | "export";
+  timestamp: number;
+  name: string;
+  executedAt: string;
+};
+
 export class MigrationTableClient {
   private appId: string;
   private branch: string;
@@ -18,21 +25,17 @@ export class MigrationTableClient {
     this.branch = branch;
   }
 
-  private generateTableName({
-    appId,
-    branch,
-  }: {
-    appId: string;
-    branch: string;
-  }) {
-    return `amplify-data-migration-${appId}-${branch}`;
+  /**
+   * Generates a migration table name based on the appId and branch.
+   * @returns The generated migration table name
+   * @internal
+   */
+  generateTableName() {
+    return `amplify-data-migration-${this.appId}-${this.branch}`;
   }
 
   async createMigrationTable() {
-    const tableName = this.generateTableName({
-      appId: this.appId,
-      branch: this.branch,
-    });
+    const tableName = this.generateTableName();
     await this.dynamoDBClient.send(
       new CreateTableCommand({
         TableName: tableName,
@@ -63,10 +66,7 @@ export class MigrationTableClient {
   }
 
   async destroyMigrationTable() {
-    const tableName = this.generateTableName({
-      appId: this.appId,
-      branch: this.branch,
-    });
+    const tableName = this.generateTableName();
     await this.dynamoDBClient.send(
       new DeleteTableCommand({
         TableName: tableName,
@@ -75,18 +75,42 @@ export class MigrationTableClient {
     return tableName;
   }
 
+  async getExecutedMigrations(): Promise<MigrationRecord[]> {
+    const tableName = this.generateTableName();
+    const output = await this.dynamoDBClient.send(
+      new QueryCommand({
+        TableName: tableName,
+        KeyConditionExpression: "#action = :action",
+        ExpressionAttributeNames: {
+          "#action": "action",
+        },
+        ExpressionAttributeValues: {
+          ":action": { S: "run" },
+        },
+      })
+    );
+    return (
+      output.Items?.map((item) => ({
+        action: item.action.S as "run",
+        timestamp: parseInt(item.timestamp.N as string, 10),
+        name: item.name.S as string,
+        executedAt: item.executedAt.S as string,
+      })) ?? []
+    );
+  }
+
   async getLastMigrationTimestamp(): Promise<number | undefined> {
-    const tableName = this.generateTableName({
-      appId: this.appId,
-      branch: this.branch,
-    });
+    const tableName = this.generateTableName();
     const output = await this.dynamoDBClient.send(
       new QueryCommand({
         TableName: tableName,
         Limit: 1,
         ScanIndexForward: false,
         ConsistentRead: true,
-        KeyConditionExpression: "action = :action",
+        KeyConditionExpression: "#action = :action",
+        ExpressionAttributeNames: {
+          "#action": "action",
+        },
         ExpressionAttributeValues: {
           ":action": { S: "run" },
         },
@@ -99,11 +123,10 @@ export class MigrationTableClient {
     return value ? parseInt(value, 10) : undefined;
   }
 
-  async saveExecutedMigration(migration: Migration) {
-    const tableName = this.generateTableName({
-      appId: this.appId,
-      branch: this.branch,
-    });
+  async saveExecutedMigration(
+    migration: Pick<Migration, "name" | "timestamp">
+  ) {
+    const tableName = this.generateTableName();
     const output = await this.dynamoDBClient.send(
       new PutItemCommand({
         TableName: tableName,
@@ -111,6 +134,49 @@ export class MigrationTableClient {
           action: { S: "run" },
           timestamp: { N: migration.timestamp.toString() },
           name: { S: migration.name },
+          executedAt: { S: new Date().toISOString() },
+        },
+      })
+    );
+  }
+
+  async getExported(migration: Migration) {
+    const tableName = this.generateTableName();
+    const output = await this.dynamoDBClient.send(
+      new QueryCommand({
+        TableName: tableName,
+        KeyConditionExpression: "#action = :action AND #timestamp = :timestamp",
+        ExpressionAttributeNames: {
+          "#action": "action",
+          "#timestamp": "timestamp",
+        },
+        ExpressionAttributeValues: {
+          ":action": { S: "export" },
+          ":timestamp": { N: migration.timestamp.toString(10) },
+        },
+      })
+    );
+    if (output.Count === 0 || !output.Items) {
+      return undefined;
+    }
+    const value = output.Items[0].exported.S;
+    return value ? (JSON.parse(value) as Record<string, string>) : undefined;
+  }
+
+  async saveExported(
+    migration: Pick<Migration, "name" | "timestamp"> & {
+      exported: Record<string, string>;
+    }
+  ) {
+    const tableName = this.generateTableName();
+    const output = await this.dynamoDBClient.send(
+      new PutItemCommand({
+        TableName: tableName,
+        Item: {
+          action: { S: "export" },
+          name: { S: migration.name },
+          timestamp: { N: Date.now().toString() },
+          exported: { S: JSON.stringify(migration.exported) },
           executedAt: { S: new Date().toISOString() },
         },
       })

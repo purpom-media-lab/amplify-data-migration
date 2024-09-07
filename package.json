@@ -11,7 +11,9 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "watch": "npm run build -- --watch"
+    "watch": "npm run build -- --watch",
+    "test": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "keywords": [
     "amplify",
@@ -23,13 +25,17 @@
   "devDependencies": {
     "@types/node": "^22.5.0",
     "@types/yargs": "^17.0.33",
-    "typescript": "^5.5.4"
+    "@vitest/coverage-v8": "^2.0.5",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5",
+    "vitest-dynamodb-lite": "^3.1.1"
   },
   "dependencies": {
     "@aws-sdk/client-amplify": "^3.637.0",
     "@aws-sdk/client-cloudformation": "^3.637.0",
     "@aws-sdk/client-dynamodb": "^3.637.0",
     "@aws-sdk/credential-providers": "^3.637.0",
+    "@aws-sdk/lib-dynamodb": "^3.637.0",
     "@smithy/node-config-provider": "^3.1.4",
     "yargs": "^17.7.2"
   }
