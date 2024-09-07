@@ -32,16 +32,21 @@ export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
         `stack not found for appId: ${this.appId}, branch: ${this.branch}`
       );
     }
-    return this.collectDynamoDBTables(stackArn);
+    return this.collectDynamoDBTables(this.stackArnToStackName(stackArn));
+  }
+
+  stackArnToStackName(stackArn: string): string {
+    const parts = stackArn.split("/");
+    return parts[1];
   }
 
   private async collectDynamoDBTables(
-    rootStackArn: string,
+    stackName: string,
     tables: Record<string, string> = {}
   ): Promise<Record<string, string>> {
     const cloudformationClient = new CloudFormationClient();
     const output = await cloudformationClient.send(
-      new DescribeStackResourcesCommand({ PhysicalResourceId: rootStackArn })
+      new DescribeStackResourcesCommand({ StackName: stackName })
     );
     const AmplifyDynamoDBTables = output.StackResources?.filter(
       (resource) => resource.ResourceType === "Custom::AmplifyDynamoDBTable"
@@ -67,7 +72,7 @@ export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
           throw new Error(`PhysicalResourceId not found for ${stack}`);
         }
         const collectedTables = await this.collectDynamoDBTables(
-          stack.PhysicalResourceId,
+          this.stackArnToStackName(stack.PhysicalResourceId),
           tables
         );
         if (collectedTables) {
