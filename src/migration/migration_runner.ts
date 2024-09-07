@@ -109,7 +109,7 @@ export class MigrationRunner {
     const files = (
       await fsp.readdir(this.migrationsDir, { withFileTypes: true })
     )
-      .filter((dirent) => dirent.isFile())
+      .filter((dirent) => dirent.isFile() && dirent.name.endsWith(".js"))
       .map((dirent) => dirent.name);
     const migrations = await Promise.all(
       files.map(async (file) => {
