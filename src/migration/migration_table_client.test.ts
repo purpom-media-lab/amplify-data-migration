@@ -1,10 +1,11 @@
 import {
-  afterAll,
-  beforeAll,
   describe,
   beforeEach,
   expect,
   test,
+  afterEach,
+  beforeAll,
+  afterAll,
 } from "vitest";
 import {
   DeleteTableCommand,
@@ -24,17 +25,22 @@ describe("MigrationTableClient", () => {
   let dynamoDBDocumentClient: DynamoDBDocumentClient;
   let migrationTableClient: MigrationTableClient;
 
-  beforeAll(async () => {
+  beforeAll(() => {
     dynamoDBClient = new DynamoDBClient({
-      ...(process.env.MOCK_DYNAMODB_ENDPOINT && {
-        endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-        region: "local",
-      }),
+      endpoint: "http://localhost:4566",
+      region: "ap-northeast-1",
     });
+  });
+
+  afterAll(() => {
+    dynamoDBClient.destroy();
+  });
+
+  beforeEach(async (context) => {
     dynamoDBDocumentClient = DynamoDBDocumentClient.from(dynamoDBClient);
     migrationTableClient = new MigrationTableClient(
       "appId",
-      "branch",
+      context.task.id,
       dynamoDBClient
     );
   });
@@ -161,9 +167,5 @@ describe("MigrationTableClient", () => {
         },
       ]);
     });
-  });
-
-  afterAll(() => {
-    dynamoDBClient.destroy();
   });
 });

@@ -2,3 +2,4 @@ node_modules
 lib
 tsconfig.tsbuildinfo
 coverage
+volume

@@ -21,3 +21,26 @@
 ```ts
 data-migration init --appId '<appId>' --branch '<branch name>' --profile '<profile name>'
 ```
+
+## Development
+
+### Build
+
+```sh
+npm run build
+```
+
+### Test
+
+テストには[LocalStack](https://github.com/localstack/localstack)を利用します。
+テスト実行前に以下のコマンドを実行して LoaclStack を起動してください。
+
+```sh
+docker-compose up
+```
+
+以下のコマンドを実行してテストを実行します。
+
+```sh
+npm test
+```

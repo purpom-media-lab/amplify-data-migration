@@ -1,5 +1,12 @@
 import { vi } from "vitest";
-import { DescribeTableCommand, DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import {
+  CreateTableCommand,
+  DeleteTableCommand,
+  DescribeTableCommand,
+  DynamoDBClient,
+  KeyType,
+  ScalarAttributeType,
+} from "@aws-sdk/client-dynamodb";
 import {
   BatchWriteCommand,
   DynamoDBDocumentClient,
@@ -41,6 +48,39 @@ export const waitUntilDeleted = async (
   }, options);
 };
 
+export const createTable = async (
+  dynamoDBClient: DynamoDBClient,
+  tableName: string,
+  keySchema: { AttributeName: string; KeyType: KeyType }[],
+  AttributeDefinitions: {
+    AttributeName: string;
+    AttributeType: ScalarAttributeType;
+  }[]
+) => {
+  await dynamoDBClient.send(
+    new CreateTableCommand({
+      TableName: tableName,
+      AttributeDefinitions: AttributeDefinitions,
+      KeySchema: keySchema,
+      ProvisionedThroughput: {
+        ReadCapacityUnits: 1,
+        WriteCapacityUnits: 1,
+      },
+    })
+  );
+};
+
+export const deleteTable = async (
+  dynamoDBClient: DynamoDBClient,
+  tableName: string
+) => {
+  await dynamoDBClient.send(
+    new DeleteTableCommand({
+      TableName: tableName,
+    })
+  );
+};
+
 export const setupData = async (
   dynamoDBDocumentClient: DynamoDBDocumentClient,
   tableName: string,
@@ -74,4 +114,26 @@ export const setupData = async (
       })
     );
   };
+};
+
+export const createTodoTable = async (
+  dynamoDBClient: DynamoDBClient,
+  todoTableName: string
+) => {
+  await createTable(
+    dynamoDBClient,
+    todoTableName,
+    [
+      {
+        AttributeName: "id",
+        KeyType: "HASH",
+      },
+    ],
+    [
+      {
+        AttributeName: "id",
+        AttributeType: "S",
+      },
+    ]
+  );
 };

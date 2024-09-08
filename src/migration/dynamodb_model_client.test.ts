@@ -1,5 +1,6 @@
 import {
   afterAll,
+  afterEach,
   beforeAll,
   beforeEach,
   describe,
@@ -7,32 +8,35 @@ import {
   test,
 } from "vitest";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import {
-  BatchWriteCommand,
-  DynamoDBDocumentClient,
-  ScanCommand,
-} from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import { DynamoDBModelClient } from "./dynamodb_model_client.js";
 import { ModelTransformer } from "../types/model_client.js";
-import { setupData } from "../test/dynamodb.js";
+import { createTodoTable, deleteTable, setupData } from "../test/dynamodb.js";
 
 describe("DynamoDBModelClient", () => {
   let modelClient: DynamoDBModelClient;
   let dynamoDBClient: DynamoDBClient;
   let dynamoDBDocumentClient: DynamoDBDocumentClient;
 
-  beforeAll(async () => {
+  beforeAll(() => {
     dynamoDBClient = new DynamoDBClient({
-      ...(process.env.MOCK_DYNAMODB_ENDPOINT && {
-        endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
-        region: "local",
-      }),
+      endpoint: "http://localhost:4566",
+      region: "ap-northeast-1",
     });
+  });
+
+  afterAll(() => {
+    dynamoDBClient.destroy();
+  });
+
+  beforeEach(async (context) => {
+    const todoTableName = `TodoTable${context.task.id}`;
+    await createTodoTable(dynamoDBClient, todoTableName);
     modelClient = new DynamoDBModelClient({
       dynamoDBClient,
       tables: {
         Todo: {
-          tableName: "TodoTable",
+          tableName: todoTableName,
           tableArn:
             "arn:aws:dynamodb:ap-northeast-1:123456789012:table/TodoTable",
           modelName: "Todo",
@@ -50,10 +54,7 @@ describe("DynamoDBModelClient", () => {
       },
     });
     dynamoDBDocumentClient = DynamoDBDocumentClient.from(dynamoDBClient);
-  });
-
-  beforeEach(async () => {
-    return setupData(dynamoDBDocumentClient, "TodoTable", [
+    return setupData(dynamoDBDocumentClient, todoTableName, [
       {
         id: "1",
         title: "title_1",
@@ -69,25 +70,26 @@ describe("DynamoDBModelClient", () => {
     ]);
   });
 
+  afterEach(async (context) => {
+    await await deleteTable(dynamoDBClient, `TodoTable${context.task.id}`);
+  });
+
   describe("updateModel", () => {
-    test("updates model with returned value by transformer function", async () => {
+    test("updates model with returned value by transformer function", async (context) => {
       type Todo = { id: string; title: string };
       const transformer: ModelTransformer<Todo, Todo> = async (oldModel) => {
         return { ...oldModel, title: oldModel.title.toUpperCase() };
       };
       await modelClient.updateModel("Todo", transformer);
 
+      const todoTableName = `TodoTable${context.task.id}`;
       const output = await dynamoDBDocumentClient.send(
-        new ScanCommand({ TableName: "TodoTable" })
+        new ScanCommand({ TableName: todoTableName })
       );
       expect(output.Count).toBe(3);
       expect(output.Items).toContainEqual({ id: "1", title: "TITLE_1" });
       expect(output.Items).toContainEqual({ id: "2", title: "TITLE_2" });
       expect(output.Items).toContainEqual({ id: "3", title: "TITLE_3" });
     });
-  });
-
-  afterAll(() => {
-    dynamoDBClient.destroy();
   });
 });
