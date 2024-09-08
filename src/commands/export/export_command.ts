@@ -6,7 +6,7 @@ import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DefaultDynamoDBTableProvider } from "../../migration/default_dynamodb_table_provider.js";
 import { MigrationRunner } from "../../migration/migration_runner.js";
 import { S3Client } from "@aws-sdk/client-s3";
-import { S3ExportClient } from "../../export/export_s3_client.js";
+import { S3ExportClient } from "../../export/s3_export_client.js";
 
 type ExportCommandOptionsCamelCase = {
   branch: string;

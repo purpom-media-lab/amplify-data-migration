@@ -82,9 +82,15 @@ export class PITRDynamoDBExport<TModel extends object>
       });
     }
     if (!body) {
-      throw new Error(`${fileKey} is empty`);
+      // empty *.json.gz file
+      return [];
     }
-    return body.split(/\r?\n/).map((line) => JSON.parse(line));
+    return body
+      .split(/\r?\n/)
+      .filter((line) => !!line.trim())
+      .map((line) => {
+        return JSON.parse(line);
+      });
   }
 
   private async readDataFile(fileKey: string): Promise<TModel[]> {

@@ -1,0 +1,17 @@
+{
+  "version": "2020-06-30",
+  "exportArn": "arn:aws:dynamodb:ap-northeast-1:123456789012:table/TodoTable/export/01725803054816-222a3242",
+  "startTime": "2024-09-08T13:44:14.816Z",
+  "endTime": "2024-09-08T13:49:25.558Z",
+  "tableArn": "arn:aws:dynamodb:ap-northeast-1:123456789012:table/TodoTable",
+  "tableId": "9173325d-8d1c-42aa-8301-33ba00ac6282",
+  "exportTime": "2024-09-08T13:44:14.816Z",
+  "s3Bucket": "amplify-export-appid-main",
+  "s3Prefix": null,
+  "s3SseAlgorithm": "AES256",
+  "s3SseKmsKeyId": null,
+  "manifestFilesS3Key": "AWSDynamoDB/01725803054816-222a3242/manifest-files.json",
+  "billedSizeBytes": 0,
+  "itemCount": 3,
+  "outputFormat": "DYNAMODB_JSON"
+}

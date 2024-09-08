@@ -24,11 +24,14 @@ export class S3ExportClient {
   }
 
   generateBucketName() {
-    return `amplify-export-${this.appId}-${this.branch}`;
+    const branch = this.branch.replaceAll("_", "-").toLocaleLowerCase();
+    const appId = this.appId.replaceAll("_", "-").toLocaleLowerCase();
+    return `amplify-export-${appId}-${branch}`;
   }
 
   async createBucket(): Promise<string> {
     const bucketName = this.generateBucketName();
+    console.log(`Creating bucket: ${bucketName}`);
     await this.s3Client.send(new CreateBucketCommand({ Bucket: bucketName }));
     return bucketName;
   }

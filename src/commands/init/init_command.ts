@@ -3,7 +3,7 @@ import { printer } from "../../printer.js";
 import { CommandMiddleware } from "../../command_middleware.js";
 import { MigrationTableClient } from "../../migration/migration_table_client.js";
 import { S3Client } from "@aws-sdk/client-s3";
-import { S3ExportClient } from "../../export/export_s3_client.js";
+import { S3ExportClient } from "../../export/s3_export_client.js";
 
 type InitCommandOptionsCamelCase = {
   branch: string;
