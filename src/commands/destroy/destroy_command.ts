@@ -2,6 +2,8 @@ import type { ArgumentsCamelCase, Argv, CommandModule } from "yargs";
 import { printer } from "../../printer.js";
 import { CommandMiddleware } from "../../command_middleware.js";
 import { MigrationTableClient } from "../../migration/migration_table_client.js";
+import { S3ExportClient } from "../../export/export_s3_client.js";
+import { S3Client } from "@aws-sdk/client-s3";
 
 type DestroyCommandOptionsCamelCase = {
   branch: string;
@@ -38,9 +40,17 @@ export class DestroyCommand
    */
   async handler(args: ArgumentsCamelCase<DestroyCommandOptionsCamelCase>) {
     const { branch, appId } = args;
-    const migrationClient = new MigrationTableClient(appId, branch);
-    const tableName = await migrationClient.destroyMigrationTable();
+    const migrationTableClient = new MigrationTableClient(appId, branch);
+    const s3Client = new S3Client();
+    const s3ExportClient = new S3ExportClient({
+      appId,
+      branch,
+      s3Client,
+    });
+    const tableName = await migrationTableClient.destroyMigrationTable();
     printer.log(`Destroyed migration table: ${tableName} for branch ${branch}`);
+    const bucketName = await s3ExportClient.destroyBucket();
+    printer.log(`Destroyed S3 bucket: ${bucketName} for branch ${branch}`);
   }
 
   /**

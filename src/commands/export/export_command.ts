@@ -5,6 +5,8 @@ import { MigrationTableClient } from "../../migration/migration_table_client.js"
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DefaultDynamoDBTableProvider } from "../../migration/default_dynamodb_table_provider.js";
 import { MigrationRunner } from "../../migration/migration_runner.js";
+import { S3Client } from "@aws-sdk/client-s3";
+import { S3ExportClient } from "../../export/export_s3_client.js";
 
 type ExportCommandOptionsCamelCase = {
   branch: string;
@@ -43,14 +45,22 @@ export class ExportCommand
   async handler(args: ArgumentsCamelCase<ExportCommandOptionsCamelCase>) {
     const { branch, appId, migrationsDir } = args;
     const dynamoDBClient = new DynamoDBClient();
+    const s3Client = new S3Client();
     const migrationTableClient = new MigrationTableClient(appId, branch);
     const dynamoDBTableProvider = new DefaultDynamoDBTableProvider({
       appId,
       branch,
     });
+    const s3ExportClient = new S3ExportClient({
+      appId,
+      branch,
+      s3Client,
+    });
     const migrationRunner = new MigrationRunner({
       migrationsDir,
       dynamoDBClient,
+      s3Bucket: s3ExportClient.generateBucketName(),
+      s3Client,
       migrationTableClient,
       dynamoDBTableProvider,
     });

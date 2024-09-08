@@ -14,15 +14,23 @@ import {
   waitUntilDeleted,
 } from "../test/dynamodb.js";
 import { MigrationRunner } from "./migration_runner.js";
-import { DynamoDBTableProvider } from "./dynamodb_table_provider.js";
+import {
+  AmplifyDynamoDBTable,
+  DynamoDBTableProvider,
+} from "./dynamodb_table_provider.js";
+import { S3Client } from "@aws-sdk/client-s3";
 
 describe("MigrationRunner", () => {
+  let s3Client: S3Client;
   let dynamoDBClient: DynamoDBClient;
   let dynamoDBDocumentClient: DynamoDBDocumentClient;
   let migrationTableClient: MigrationTableClient;
   let dynamoDBTableProvider: DynamoDBTableProvider;
   let migrationRunner: MigrationRunner;
   beforeAll(async () => {
+    s3Client = new S3Client({
+      // TODO: Set up S3 client for localstack
+    });
     dynamoDBClient = new DynamoDBClient({
       ...(process.env.MOCK_DYNAMODB_ENDPOINT && {
         endpoint: process.env.MOCK_DYNAMODB_ENDPOINT,
@@ -36,9 +44,14 @@ describe("MigrationRunner", () => {
       dynamoDBClient
     );
     dynamoDBTableProvider = new (class implements DynamoDBTableProvider {
-      async getDynamoDBTables(): Promise<Record<string, string>> {
+      async getDynamoDBTables(): Promise<Record<string, AmplifyDynamoDBTable>> {
         return {
-          Todo: "TodoTable",
+          Todo: {
+            tableName: "TodoTable",
+            tableArn:
+              "arn:aws:dynamodb:ap-northeast-1:123456789012:table/TodoTable",
+            modelName: "Todo",
+          },
         };
       }
     })();
@@ -49,6 +62,8 @@ describe("MigrationRunner", () => {
         "pending_migrations"
       ),
       dynamoDBClient,
+      s3Bucket: "amplify-migration-export", //TODO: Set up S3 bucket for localstack
+      s3Client,
       migrationTableClient,
       dynamoDBTableProvider,
     });

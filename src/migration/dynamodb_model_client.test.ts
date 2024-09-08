@@ -31,7 +31,22 @@ describe("DynamoDBModelClient", () => {
     modelClient = new DynamoDBModelClient({
       dynamoDBClient,
       tables: {
-        Todo: "TodoTable",
+        Todo: {
+          tableName: "TodoTable",
+          tableArn:
+            "arn:aws:dynamodb:ap-northeast-1:123456789012:table/TodoTable",
+          modelName: "Todo",
+        },
+      },
+      dynamoDBTableExporterFactory: {
+        create: () => {
+          throw new Error("Not implemented");
+        },
+      },
+      dynamoDBTableExportFactory: {
+        getExport(key) {
+          throw new Error("Not implemented");
+        },
       },
     });
     dynamoDBDocumentClient = DynamoDBDocumentClient.from(dynamoDBClient);

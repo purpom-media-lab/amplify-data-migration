@@ -1,5 +1,8 @@
 import { AmplifyClient, GetBranchCommand } from "@aws-sdk/client-amplify";
-import { DynamoDBTableProvider } from "./dynamodb_table_provider.js";
+import {
+  AmplifyDynamoDBTable,
+  DynamoDBTableProvider,
+} from "./dynamodb_table_provider.js";
 import {
   CloudFormationClient,
   DescribeStackResourcesCommand,
@@ -12,7 +15,7 @@ export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
     this.appId = appId;
     this.branch = branch;
   }
-  async getDynamoDBTables(): Promise<Record<string, string>> {
+  async getDynamoDBTables(): Promise<Record<string, AmplifyDynamoDBTable>> {
     const amplifyClient = new AmplifyClient();
     const output = await amplifyClient.send(
       new GetBranchCommand({
@@ -42,8 +45,8 @@ export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
 
   private async collectDynamoDBTables(
     stackName: string,
-    tables: Record<string, string> = {}
-  ): Promise<Record<string, string>> {
+    tables: Record<string, AmplifyDynamoDBTable> = {}
+  ): Promise<Record<string, AmplifyDynamoDBTable>> {
     const cloudformationClient = new CloudFormationClient();
     const output = await cloudformationClient.send(
       new DescribeStackResourcesCommand({ StackName: stackName })
@@ -60,7 +63,16 @@ export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
           throw new Error(`LogicalResourceId not found for ${table}`);
         }
         const modelName = table.LogicalResourceId.replace(/Table$/, "");
-        return { ...acc, [modelName]: table.PhysicalResourceId };
+        const region = table.StackId?.split(":")[3];
+        const accountId = table.StackId?.split(":")[4];
+        return {
+          ...acc,
+          [modelName]: {
+            tableName: table.PhysicalResourceId,
+            tableArn: `arn:aws:dynamodb:${region}:${accountId}:table/${table.PhysicalResourceId}`,
+            modelName,
+          },
+        };
       }, tables);
     }
     const stacks = output.StackResources?.filter(

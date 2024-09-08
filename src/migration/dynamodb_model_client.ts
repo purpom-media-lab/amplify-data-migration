@@ -1,8 +1,4 @@
-import {
-  AttributeValue,
-  DynamoDBClient,
-  ExportTableToPointInTimeCommand,
-} from "@aws-sdk/client-dynamodb";
+import { AttributeValue, DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import {
   paginateScan,
   BatchWriteCommand,
@@ -10,28 +6,42 @@ import {
   DynamoDBDocumentClient,
 } from "@aws-sdk/lib-dynamodb";
 import { ModelClient, ModelTransformer } from "../types/model_client.js";
+import { AmplifyDynamoDBTable } from "./dynamodb_table_provider.js";
+import {
+  DynamoDBExportKey,
+  DynamoDBTableExporterFactory,
+  DynamoDBTableExportFactory,
+} from "../export/types/dynamodb_table_exporter.js";
 
 export class DynamoDBModelClient implements ModelClient {
-  private readonly tables: Record<string, string> = {};
+  private readonly tables: Record<string, AmplifyDynamoDBTable> = {};
   private readonly exported: Record<string, string> = {};
   private readonly dynamoDBClient: DynamoDBClient;
   private readonly dynamoDBDocumentClient: DynamoDBDocumentClient;
+  private readonly dynamoDBTableExporterFactory: DynamoDBTableExporterFactory;
+  private readonly dynamoDBTableExportFactory: DynamoDBTableExportFactory;
 
   constructor({
     tables,
     exported,
     dynamoDBClient,
+    dynamoDBTableExporterFactory,
+    dynamoDBTableExportFactory,
   }: {
-    tables?: Record<string, string>;
+    tables?: Record<string, AmplifyDynamoDBTable>;
     exported?: Record<string, string>;
     dynamoDBClient?: DynamoDBClient;
-  } = {}) {
+    dynamoDBTableExporterFactory: DynamoDBTableExporterFactory;
+    dynamoDBTableExportFactory: DynamoDBTableExportFactory;
+  }) {
     this.tables = tables ?? {};
     this.exported = exported ?? {};
     this.dynamoDBClient = dynamoDBClient ?? new DynamoDBClient();
     this.dynamoDBDocumentClient = DynamoDBDocumentClient.from(
       this.dynamoDBClient
     );
+    this.dynamoDBTableExporterFactory = dynamoDBTableExporterFactory;
+    this.dynamoDBTableExportFactory = dynamoDBTableExportFactory;
   }
 
   async updateModel(
@@ -45,11 +55,11 @@ export class DynamoDBModelClient implements ModelClient {
       };
     }
   ): Promise<void> {
-    const tableName = this.tables[modelName];
-    if (!tableName) {
+    const table = this.tables[modelName];
+    if (!table) {
       throw new Error(`Table not found for model: ${modelName}`);
     }
-
+    const tableName = table.tableName;
     const paginator = paginateScan(
       {
         client: this.dynamoDBDocumentClient,
@@ -72,6 +82,11 @@ export class DynamoDBModelClient implements ModelClient {
       );
       await this.dynamoDBDocumentClient.send(new BatchWriteCommand(input));
     }
+  }
+
+  async exportModel(modelName: string): Promise<DynamoDBExportKey> {
+    const exporter = await this.dynamoDBTableExporterFactory.create(modelName);
+    return exporter.runExport();
   }
 
   private toBatchWriteItemInput(

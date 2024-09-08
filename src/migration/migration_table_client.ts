@@ -5,7 +5,9 @@ import {
   PutItemCommand,
   QueryCommand,
 } from "@aws-sdk/client-dynamodb";
+import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import type { Migration } from "../types/migration.js";
+import { DynamoDBExportKey } from "../export/types/dynamodb_table_exporter.js";
 
 type MigrationRecord = {
   action: "run" | "export";
@@ -159,26 +161,26 @@ export class MigrationTableClient {
     if (output.Count === 0 || !output.Items) {
       return undefined;
     }
-    const value = output.Items[0].exported.S;
-    return value ? (JSON.parse(value) as Record<string, string>) : undefined;
+    const value = unmarshall(output.Items[0]).exported as DynamoDBExportKey;
+    return value;
   }
 
   async saveExported(
     migration: Pick<Migration, "name" | "timestamp"> & {
-      exported: Record<string, string>;
+      exported: Record<string, DynamoDBExportKey>;
     }
   ) {
     const tableName = this.generateTableName();
     const output = await this.dynamoDBClient.send(
       new PutItemCommand({
         TableName: tableName,
-        Item: {
-          action: { S: "export" },
-          name: { S: migration.name },
-          timestamp: { N: Date.now().toString() },
-          exported: { S: JSON.stringify(migration.exported) },
-          executedAt: { S: new Date().toISOString() },
-        },
+        Item: marshall({
+          action: "export",
+          name: migration.name,
+          timestamp: migration.timestamp,
+          exported: migration.exported,
+          executedAt: new Date().toISOString(),
+        }),
       })
     );
   }

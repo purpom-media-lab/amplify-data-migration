@@ -1,3 +1,4 @@
+import { DynamoDBExportKey } from "../export/types/dynamodb_table_exporter.js";
 import type { ExportContext, MigrationContext } from "./context.js";
 
 export interface Migration {
@@ -11,7 +12,7 @@ export interface Migration {
    *
    * @return モデル名を属性名としてエクスポートされたデータのS3キーを値とするオブジェクト
    */
-  export?(context: ExportContext): Promise<Record<string, string>>;
+  export?(context: ExportContext): Promise<Record<string, DynamoDBExportKey>>;
   /**
    * データのマイグレーションを実行します。
    * export関数でスキーマ変更前のテーブルデータをエクスポートしている場合は、そのデータを利用することもできます。

@@ -1,4 +1,5 @@
 import type { AttributeValue } from "@aws-sdk/client-dynamodb";
+import { DynamoDBExportKey } from "../export/types/dynamodb_table_exporter.js";
 
 /**
  * データマイグレーションでのデータの変換を行う関数
@@ -32,6 +33,8 @@ export interface ModelClient {
       };
     }
   ): Promise<void>;
+
+  exportModel(modelName: string): Promise<DynamoDBExportKey>;
 
   /**
    * exportされたモデル（テーブル）のデータをインポートします。

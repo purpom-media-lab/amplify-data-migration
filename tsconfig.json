@@ -27,5 +27,5 @@
     "rootDir": "src",
     "outDir": "lib"
   },
-  "exclude": ["**/node_modules", "**/lib", "vitest.config.ts", "**/*.test/*"]
+  "exclude": ["**/node_modules", "**/lib", "vitest.config.ts"]
 }

@@ -1,4 +1,8 @@
-import { Migration, MigrationContext, ModelTransformer } from "../../../types";
+import {
+  Migration,
+  MigrationContext,
+  ModelTransformer,
+} from "../../../types/index.js";
 
 export default class Migration1 implements Migration {
   name = "migration_2";
