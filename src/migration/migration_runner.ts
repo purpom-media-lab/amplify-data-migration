@@ -62,7 +62,6 @@ export class MigrationRunner {
       new DefaultDynamoDBTableExporterFactory({
         tables,
         dynamoDBClient: this.dynamoDBClient,
-        s3Client: this.s3Client,
         s3Bucket,
       });
     const dynamoDBTableExportFactory = new DefaultDynamoDBTableExportFactory(
@@ -106,7 +105,6 @@ export class MigrationRunner {
       new DefaultDynamoDBTableExporterFactory({
         tables,
         dynamoDBClient: this.dynamoDBClient,
-        s3Client: this.s3Client,
         s3Bucket,
       });
     const dynamoDBTableExportFactory = new DefaultDynamoDBTableExportFactory(

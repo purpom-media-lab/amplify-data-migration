@@ -8,7 +8,6 @@ import {
   DynamoDBTableExporter,
 } from "./types/dynamodb_table_exporter.js";
 import { AmplifyDynamoDBTable } from "../migration/dynamodb_table_provider.js";
-import { S3Client } from "@aws-sdk/client-s3";
 
 /**
  * Exporter DynamoDB table to S3 using Point-in-Time Recovery
@@ -16,7 +15,6 @@ import { S3Client } from "@aws-sdk/client-s3";
 export class PITRDynamoDBTableExporter implements DynamoDBTableExporter {
   constructor(
     private readonly dynamoDBClient: DynamoDBClient,
-    private readonly s3Client: S3Client,
     private readonly s3Bucket: string,
     private readonly table: AmplifyDynamoDBTable
   ) {}

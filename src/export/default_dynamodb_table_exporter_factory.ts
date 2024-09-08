@@ -8,30 +8,25 @@ import {
   DynamoDBTableExporterFactory,
 } from "./types/dynamodb_table_exporter.js";
 import { AmplifyDynamoDBTable } from "../migration/dynamodb_table_provider.js";
-import { S3Client } from "@aws-sdk/client-s3";
 
 export class DefaultDynamoDBTableExporterFactory
   implements DynamoDBTableExporterFactory
 {
   private readonly tables: Record<string, AmplifyDynamoDBTable> = {};
   private readonly dynamoDBClient: DynamoDBClient;
-  private readonly s3Client: S3Client;
   private readonly s3Bucket: string;
 
   constructor({
     tables,
     dynamoDBClient,
-    s3Client,
     s3Bucket,
   }: {
     tables: Record<string, AmplifyDynamoDBTable>;
     dynamoDBClient: DynamoDBClient;
-    s3Client: S3Client;
     s3Bucket: string;
   }) {
     this.tables = tables;
     this.dynamoDBClient = dynamoDBClient;
-    this.s3Client = s3Client;
     this.s3Bucket = s3Bucket;
   }
 
@@ -51,7 +46,6 @@ export class DefaultDynamoDBTableExporterFactory
       // use PITR
       return new PITRDynamoDBTableExporter(
         this.dynamoDBClient,
-        this.s3Client,
         this.s3Bucket,
         table
       );
