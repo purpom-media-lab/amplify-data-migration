@@ -42,14 +42,26 @@ describe("DynamoDBModelClient", () => {
           modelName: "Todo",
         },
       },
+      exported: {
+        Todo: {
+          strategy: "PITR",
+          key: "AWSDynamoDB/01725803054816-222a3242/manifest-summary.json",
+        },
+      },
       dynamoDBTableExporterFactory: {
         create: () => {
           throw new Error("Not implemented");
         },
       },
       dynamoDBTableExportFactory: {
-        getExport(key) {
-          throw new Error("Not implemented");
+        async getExport(key) {
+          return {
+            async *items(): AsyncGenerator<any> {
+              yield { id: "1", title: "title_1" };
+              yield { id: "2", title: "title_2" };
+              yield { id: "3", title: "title_3" };
+            },
+          };
         },
       },
     });
@@ -85,6 +97,26 @@ describe("DynamoDBModelClient", () => {
       const todoTableName = `TodoTable${context.task.id}`;
       const output = await dynamoDBDocumentClient.send(
         new ScanCommand({ TableName: todoTableName })
+      );
+      expect(output.Count).toBe(3);
+      expect(output.Items).toContainEqual({ id: "1", title: "TITLE_1" });
+      expect(output.Items).toContainEqual({ id: "2", title: "TITLE_2" });
+      expect(output.Items).toContainEqual({ id: "3", title: "TITLE_3" });
+    });
+  });
+
+  describe("runImport", () => {
+    test("imports items", async (context) => {
+      const tableName = `TodoTable${context.task.id}`;
+      type Todo = { id: string; title: string };
+      const transformer: ModelTransformer<Todo, Todo> = async (oldModel) => {
+        return { ...oldModel, title: oldModel.title.toUpperCase() };
+      };
+
+      await modelClient.runImport("Todo", transformer);
+
+      const output = await dynamoDBDocumentClient.send(
+        new ScanCommand({ TableName: tableName })
       );
       expect(output.Count).toBe(3);
       expect(output.Items).toContainEqual({ id: "1", title: "TITLE_1" });

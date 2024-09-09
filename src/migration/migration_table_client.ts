@@ -161,7 +161,10 @@ export class MigrationTableClient {
     if (output.Count === 0 || !output.Items) {
       return undefined;
     }
-    const value = unmarshall(output.Items[0]).exported as DynamoDBExportKey;
+    const value = unmarshall(output.Items[0]).exported as Record<
+      string,
+      DynamoDBExportKey
+    >;
     return value;
   }
 

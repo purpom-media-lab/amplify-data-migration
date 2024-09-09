@@ -15,7 +15,7 @@ import {
 
 export class DynamoDBModelClient implements ModelClient {
   private readonly tables: Record<string, AmplifyDynamoDBTable> = {};
-  private readonly exported: Record<string, string> = {};
+  private readonly exported: Record<string, DynamoDBExportKey> = {};
   private readonly dynamoDBClient: DynamoDBClient;
   private readonly dynamoDBDocumentClient: DynamoDBDocumentClient;
   private readonly dynamoDBTableExporterFactory: DynamoDBTableExporterFactory;
@@ -29,7 +29,7 @@ export class DynamoDBModelClient implements ModelClient {
     dynamoDBTableExportFactory,
   }: {
     tables?: Record<string, AmplifyDynamoDBTable>;
-    exported?: Record<string, string>;
+    exported?: Record<string, DynamoDBExportKey>;
     dynamoDBClient?: DynamoDBClient;
     dynamoDBTableExporterFactory: DynamoDBTableExporterFactory;
     dynamoDBTableExportFactory: DynamoDBTableExportFactory;
@@ -102,7 +102,35 @@ export class DynamoDBModelClient implements ModelClient {
     };
   }
 
-  runImport(modelName: string, transformer: ModelTransformer): Promise<void> {
-    throw new Error("Method not implemented.");
+  async runImport<TModel extends object>(
+    modelName: string,
+    transformer: ModelTransformer<any, any>
+  ): Promise<void> {
+    const amplifyDaynamoDBTable = this.tables[modelName];
+    if (!amplifyDaynamoDBTable) {
+      throw new Error(`Table not found for model: ${modelName}`);
+    }
+    const exportedKey = this.exported[modelName];
+    const dynamoDBExport =
+      await this.dynamoDBTableExportFactory.getExport<TModel>(exportedKey);
+
+    const batchWriteItems = async (newModels: any[]) => {
+      const input = this.toBatchWriteItemInput(
+        amplifyDaynamoDBTable.tableName,
+        newModels
+      );
+      await this.dynamoDBDocumentClient.send(new BatchWriteCommand(input));
+    };
+    const newModels: any[] = [];
+    for await (const item of dynamoDBExport.items()) {
+      newModels.push(await transformer(item));
+      if (newModels.length === 25) {
+        await batchWriteItems(newModels);
+        newModels.length = 0;
+      }
+    }
+    if (newModels.length > 0) {
+      await batchWriteItems(newModels);
+    }
   }
 }
