@@ -16,7 +16,8 @@ export class PITRDynamoDBTableExporter implements DynamoDBTableExporter {
   constructor(
     private readonly dynamoDBClient: DynamoDBClient,
     private readonly s3Bucket: string,
-    private readonly table: AmplifyDynamoDBTable
+    private readonly table: AmplifyDynamoDBTable,
+    private readonly interval: number = 5000
   ) {}
 
   async runExport(): Promise<DynamoDBExportKey> {
@@ -29,6 +30,7 @@ export class PITRDynamoDBTableExporter implements DynamoDBTableExporter {
     );
     let exportDescription = exportOutput.ExportDescription;
     while (exportDescription?.ExportStatus === "IN_PROGRESS") {
+      await new Promise((resolve) => setTimeout(resolve, this.interval));
       const describeExportOutput = await this.dynamoDBClient.send(
         new DescribeExportCommand({
           ExportArn: exportOutput.ExportDescription?.ExportArn,

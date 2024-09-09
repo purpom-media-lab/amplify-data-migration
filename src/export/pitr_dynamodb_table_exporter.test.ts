@@ -90,7 +90,8 @@ describe("PITRDynamoDBTableExporter", () => {
           tableName,
           tableArn: `arn:aws:dynamodb:ap-northeast-1:123456789012:table/${tableName}`,
           modelName: "Todo",
-        }
+        },
+        1
       );
       const exportKey = await exporter.runExport();
       expect(exportKey).toEqual({
