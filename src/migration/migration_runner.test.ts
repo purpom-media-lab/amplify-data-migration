@@ -26,7 +26,7 @@ import { MigrationRunner } from "./migration_runner.js";
 import {
   AmplifyDynamoDBTable,
   DynamoDBTableProvider,
-} from "./dynamodb_table_provider.js";
+} from "./types/dynamodb_table_provider.js";
 import { S3Client } from "@aws-sdk/client-s3";
 import { ExportContext } from "../types/context.js";
 

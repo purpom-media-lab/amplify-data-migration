@@ -5,7 +5,7 @@ import { Migration } from "../types/migration.js";
 import { DynamoDBModelClient } from "./dynamodb_model_client.js";
 import { MigrationTableClient } from "./migration_table_client.js";
 import * as fsp from "node:fs/promises";
-import { DynamoDBTableProvider } from "./dynamodb_table_provider.js";
+import { DynamoDBTableProvider } from "./types/dynamodb_table_provider.js";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DefaultDynamoDBTableExporterFactory } from "../export/default_dynamodb_table_exporter_factory.js";
 import { S3Client } from "@aws-sdk/client-s3";

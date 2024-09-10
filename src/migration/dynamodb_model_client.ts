@@ -6,7 +6,7 @@ import {
   DynamoDBDocumentClient,
 } from "@aws-sdk/lib-dynamodb";
 import { ModelClient, ModelTransformer } from "../types/model_client.js";
-import { AmplifyDynamoDBTable } from "./dynamodb_table_provider.js";
+import { AmplifyDynamoDBTable } from "./types/dynamodb_table_provider.js";
 import {
   DynamoDBExportKey,
   DynamoDBTableExporterFactory,

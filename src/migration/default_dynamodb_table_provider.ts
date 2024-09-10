@@ -2,7 +2,7 @@ import { AmplifyClient, GetBranchCommand } from "@aws-sdk/client-amplify";
 import {
   AmplifyDynamoDBTable,
   DynamoDBTableProvider,
-} from "./dynamodb_table_provider.js";
+} from "./types/dynamodb_table_provider.js";
 import {
   CloudFormationClient,
   DescribeStackResourcesCommand,

@@ -7,7 +7,7 @@ import {
   DynamoDBExportKey,
   DynamoDBTableExporter,
 } from "./types/dynamodb_table_exporter.js";
-import { AmplifyDynamoDBTable } from "../migration/dynamodb_table_provider.js";
+import { AmplifyDynamoDBTable } from "../migration/types/dynamodb_table_provider.js";
 
 /**
  * Exporter DynamoDB table to S3 using Point-in-Time Recovery

@@ -7,7 +7,7 @@ import {
   DynamoDBTableExporter,
   DynamoDBTableExporterFactory,
 } from "./types/dynamodb_table_exporter.js";
-import { AmplifyDynamoDBTable } from "../migration/dynamodb_table_provider.js";
+import { AmplifyDynamoDBTable } from "../migration/types/dynamodb_table_provider.js";
 
 export class DefaultDynamoDBTableExporterFactory
   implements DynamoDBTableExporterFactory
