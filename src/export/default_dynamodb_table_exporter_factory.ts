@@ -52,6 +52,8 @@ export class DefaultDynamoDBTableExporterFactory
     } else {
       // TODO: use on-demand backup
     }
-    throw new Error("Invalid backup configuration");
+    throw new Error(
+      `Invalid backup configuration for table "${table.tableName}"`
+    );
   }
 }

@@ -1,6 +1,6 @@
 import * as path from "node:path";
 import { printer } from "../printer.js";
-import { MigrationContext } from "../types/context.js";
+import { ExportContext, MigrationContext } from "../types/context.js";
 import { Migration } from "../types/migration.js";
 import { DynamoDBModelClient } from "./dynamodb_model_client.js";
 import { MigrationTableClient } from "./migration_table_client.js";
@@ -44,18 +44,7 @@ export class MigrationRunner {
     this.dynamoDBTableProvider = dynamoDBTableProvider;
   }
 
-  public async export(): Promise<void> {
-    const migrations = await this.getPendingMigrations();
-    const pendingExports = migrations.filter(
-      (migration) => typeof migration.export === "function"
-    ) as Required<Migration>[];
-    if (pendingExports.length === 0) {
-      printer.log("No pending export migrations");
-      return;
-    }
-    if (pendingExports.length > 1) {
-      throw new Error("Only one export migration is allowed at a time");
-    }
+  private async createExportContext(): Promise<ExportContext> {
     const s3Bucket = this.s3Bucket;
     const tables = await this.dynamoDBTableProvider.getDynamoDBTables();
     const dynamoDBTableExporterFactory =
@@ -74,8 +63,25 @@ export class MigrationRunner {
       dynamoDBTableExporterFactory,
       dynamoDBTableExportFactory,
     });
+    return { tables, modelClient };
+  }
+
+  public async export(exportContext?: ExportContext): Promise<void> {
+    const migrations = await this.getPendingMigrations();
+    const pendingExports = migrations.filter(
+      (migration) => typeof migration.export === "function"
+    ) as Required<Migration>[];
+    if (pendingExports.length === 0) {
+      printer.log("No pending export migrations");
+      return;
+    }
+    if (pendingExports.length > 1) {
+      throw new Error("Only one export migration is allowed at a time");
+    }
+
     const pendingExport = pendingExports[0];
-    const exported = await pendingExport.export({ tables, modelClient });
+    exportContext = exportContext ?? (await this.createExportContext());
+    const exported = await pendingExport.export(exportContext);
     // Save exported data to migration table
     await this.migrationTableClient.saveExported({
       ...pendingExport,

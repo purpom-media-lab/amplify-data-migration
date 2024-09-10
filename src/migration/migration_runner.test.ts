@@ -12,6 +12,7 @@ import {
   describe,
   expect,
   test,
+  vi,
 } from "vitest";
 import { MigrationTableClient } from "./migration_table_client.js";
 import {
@@ -27,6 +28,7 @@ import {
   DynamoDBTableProvider,
 } from "./dynamodb_table_provider.js";
 import { S3Client } from "@aws-sdk/client-s3";
+import { ExportContext } from "../types/context.js";
 
 describe("MigrationRunner", () => {
   let s3Client: S3Client;
@@ -52,6 +54,7 @@ describe("MigrationRunner", () => {
       dynamoDBClient
     );
     await createTodoTable(dynamoDBClient, todoTableName);
+
     dynamoDBTableProvider = new (class implements DynamoDBTableProvider {
       async getDynamoDBTables(): Promise<Record<string, AmplifyDynamoDBTable>> {
         return {
@@ -67,10 +70,10 @@ describe("MigrationRunner", () => {
       migrationsDir: path.join(
         __dirname,
         "migration_runner.test",
-        "pending_migrations"
+        context.task.suite?.name!
       ),
       dynamoDBClient,
-      s3Bucket: "amplify-migration-export", //TODO: Set up S3 bucket for localstack
+      s3Bucket: "test-bucket",
       s3Client,
       migrationTableClient,
       dynamoDBTableProvider,
@@ -78,6 +81,7 @@ describe("MigrationRunner", () => {
 
     return async () => {
       await deleteTable(dynamoDBClient, todoTableName);
+      console.log(`Deleted table: ${todoTableName}`);
     };
   });
 
@@ -228,6 +232,76 @@ describe("MigrationRunner", () => {
           executedAt,
         },
       ]);
+    });
+  });
+
+  describe("export", () => {
+    beforeEach(async (context) => {
+      const migrationTable = await migrationTableClient.createMigrationTable();
+      await waitUntilActive(dynamoDBClient, migrationTable);
+      const cleanupFn = await setupData(
+        dynamoDBDocumentClient,
+        `TodoTable${context.task.id}`,
+        [
+          {
+            id: "1",
+            title: "title_1",
+          },
+          {
+            id: "2",
+            title: "title_2",
+          },
+          {
+            id: "3",
+            title: "title_3",
+          },
+        ]
+      );
+      return async () => {
+        await migrationTableClient.destroyMigrationTable();
+        await waitUntilDeleted(dynamoDBClient, migrationTable);
+        await cleanupFn();
+      };
+    });
+
+    test("exports data from the table", async () => {
+      const exportContext: ExportContext = {
+        tables: {},
+        modelClient: {
+          exportModel: vi.fn().mockResolvedValueOnce({
+            strategy: "PITR",
+            key: `AWSDynamoDB/01725803054816-222a3242/manifest-summary.json`,
+          }),
+          updateModel: vi
+            .fn()
+            .mockRejectedValue(new Error("Function not implemented.")),
+          runImport: vi
+            .fn()
+            .mockRejectedValue(new Error("Function not implemented.")),
+        },
+      };
+
+      await migrationRunner.export(exportContext);
+
+      expect(exportContext.modelClient.exportModel).toHaveBeenCalledWith(
+        "Todo"
+      );
+      const scanOutput = await dynamoDBDocumentClient.send(
+        new ScanCommand({ TableName: migrationTableClient.generateTableName() })
+      );
+      expect(scanOutput.Count).toBe(1);
+      expect(scanOutput.Items![0]).toEqual({
+        action: "export",
+        timestamp: 1725285846599,
+        name: "migration_export_1",
+        exported: {
+          Todo: {
+            strategy: "PITR",
+            key: `AWSDynamoDB/01725803054816-222a3242/manifest-summary.json`,
+          },
+        },
+        executedAt: expect.any(String),
+      });
     });
   });
 });
