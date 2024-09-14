@@ -6,7 +6,7 @@
     "data-migration": "lib/data-migration.js"
   },
   "engines": {
-    "node": ">=18.16.0"
+    "node": ">=20"
   },
   "type": "module",
   "scripts": {
