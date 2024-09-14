@@ -1,5 +1,5 @@
 import type { AttributeValue } from "@aws-sdk/client-dynamodb";
-import { DynamoDBExportKey } from "../export/types/dynamodb_table_exporter.js";
+import type { DynamoDBExportKey } from "./dynamodb_export_key.js";
 
 /**
  * データマイグレーションでのデータの変換を行う関数
@@ -8,7 +8,7 @@ export interface ModelTransformer<
   OldModel extends {} = {},
   NewModel extends {} = {}
 > {
-  (oldModel: OldModel): Promise<NewModel>;
+  (oldModel: OldModel): Promise<NewModel | null>;
 }
 
 /**
@@ -42,5 +42,8 @@ export interface ModelClient {
    * @param transformer モデルを変換する
    * @param options オプション
    */
-  runImport(modelName: string, transformer: ModelTransformer): Promise<void>;
+  runImport(
+    modelName: string,
+    transformer: ModelTransformer<any, any>
+  ): Promise<void>;
 }

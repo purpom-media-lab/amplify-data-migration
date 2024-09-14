@@ -1,5 +1,5 @@
-import { DynamoDBExportKey } from "../export/types/dynamodb_table_exporter.js";
 import type { ExportContext, MigrationContext } from "./context.js";
+import type { DynamoDBExportKey } from "./dynamodb_export_key.js";
 
 export interface Migration {
   readonly name: string;

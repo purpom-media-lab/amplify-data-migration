@@ -5,13 +5,13 @@ import {
   BatchWriteCommandInput,
   DynamoDBDocumentClient,
 } from "@aws-sdk/lib-dynamodb";
-import { ModelClient, ModelTransformer } from "../types/model_client.js";
-import { AmplifyDynamoDBTable } from "./types/dynamodb_table_provider.js";
-import {
-  DynamoDBExportKey,
+import type { ModelClient, ModelTransformer } from "../types/model_client.js";
+import type { AmplifyDynamoDBTable } from "./types/dynamodb_table_provider.js";
+import type {
   DynamoDBTableExporterFactory,
   DynamoDBTableExportFactory,
 } from "../export/types/dynamodb_table_exporter.js";
+import type { DynamoDBExportKey } from "../types/dynamodb_export_key.js";
 
 export class DynamoDBModelClient implements ModelClient {
   private readonly tables: Record<string, AmplifyDynamoDBTable> = {};
@@ -123,7 +123,11 @@ export class DynamoDBModelClient implements ModelClient {
     };
     const newModels: any[] = [];
     for await (const item of dynamoDBExport.items()) {
-      newModels.push(await transformer(item));
+      const newItem = await transformer(item);
+      if (!newItem) {
+        continue;
+      }
+      newModels.push(newItem);
       if (newModels.length === 25) {
         await batchWriteItems(newModels);
         newModels.length = 0;

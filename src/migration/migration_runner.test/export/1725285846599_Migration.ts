@@ -1,9 +1,8 @@
-import { DynamoDBExportKey } from "../../../export/types/dynamodb_table_exporter.js";
 import {
+  DynamoDBExportKey,
   ExportContext,
   Migration,
   MigrationContext,
-  ModelTransformer,
 } from "../../../types/index.js";
 
 export default class Migration1 implements Migration {

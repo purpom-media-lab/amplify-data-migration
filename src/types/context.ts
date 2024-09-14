@@ -1,5 +1,5 @@
-import { DynamoDBExportKey } from "../export/types/dynamodb_table_exporter.js";
 import { AmplifyDynamoDBTable } from "../migration/types/dynamodb_table_provider.js";
+import { DynamoDBExportKey } from "./dynamodb_export_key.js";
 import { ModelClient } from "./model_client.js";
 
 export interface MigrationContext {
