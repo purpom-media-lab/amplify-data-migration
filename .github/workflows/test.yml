@@ -1,0 +1,37 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    branches:
+      - "main"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version:
+          - 20.x
+          - 22.x
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run docker-compose
+        uses: hoverkraft-tech/compose-action@v2.0.1
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+        env:
+          DEFAULT_REGION: ap-northeast-1
+          AWS_ACCOUNT_ID: "000000000000"
+          AWS_ACCESS_KEY_ID: dummy-access-key
+          AWS_SECRET_ACCESS_KEY: dummy-secret-key
