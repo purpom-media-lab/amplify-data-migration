@@ -1,11 +1,8 @@
+import { DynamoDBExportKey } from "../../types/dynamodb_export_key.js";
+
 export interface DynamoDBTableExporter {
   runExport(): Promise<DynamoDBExportKey>;
 }
-
-export type DynamoDBExportKey = {
-  strategy: "PITR" | "ON_DEMAND";
-  key: string;
-};
 
 export interface DynamoDBTableExporterFactory {
   create(modelName: string): Promise<DynamoDBTableExporter>;

@@ -1,9 +1,9 @@
 import { S3Client } from "@aws-sdk/client-s3";
-import {
+import type {
   DynamoDBExport,
-  DynamoDBExportKey,
   DynamoDBTableExportFactory,
 } from "./types/dynamodb_table_exporter.js";
+import type { DynamoDBExportKey } from "../types/dynamodb_export_key.js";
 import { PITRDynamoDBExport } from "./pitr_dynamodb_table_export.js";
 
 export class DefaultDynamoDBTableExportFactory

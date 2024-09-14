@@ -3,11 +3,10 @@ import {
   DynamoDBClient,
   ExportTableToPointInTimeCommand,
 } from "@aws-sdk/client-dynamodb";
-import {
-  DynamoDBExportKey,
-  DynamoDBTableExporter,
-} from "./types/dynamodb_table_exporter.js";
-import { AmplifyDynamoDBTable } from "../migration/types/dynamodb_table_provider.js";
+import type { DynamoDBTableExporter } from "./types/dynamodb_table_exporter.js";
+import type { AmplifyDynamoDBTable } from "../migration/types/dynamodb_table_provider.js";
+import type { DynamoDBExportKey } from "../types/dynamodb_export_key.js";
+import { printer } from "../printer.js";
 
 /**
  * Exporter DynamoDB table to S3 using Point-in-Time Recovery
@@ -22,6 +21,7 @@ export class PITRDynamoDBTableExporter implements DynamoDBTableExporter {
 
   async runExport(): Promise<DynamoDBExportKey> {
     const dynamoDBTable = this.table;
+    printer.log(`Exporting table "${dynamoDBTable.tableName}" to S3`);
     const exportOutput = await this.dynamoDBClient.send(
       new ExportTableToPointInTimeCommand({
         TableArn: dynamoDBTable.tableArn,
@@ -43,6 +43,9 @@ export class PITRDynamoDBTableExporter implements DynamoDBTableExporter {
         `Export failed for table "${dynamoDBTable.tableName}": ${exportDescription.FailureCode} ${exportDescription.FailureMessage}`
       );
     }
+    printer.log(
+      `Exported table "${dynamoDBTable.tableName}" to S3 successfully. ${exportDescription?.ExportArn}`
+    );
     return {
       strategy: "PITR",
       key: exportDescription!.ExportManifest!,

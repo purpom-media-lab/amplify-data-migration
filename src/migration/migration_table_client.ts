@@ -7,7 +7,7 @@ import {
 } from "@aws-sdk/client-dynamodb";
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import type { Migration } from "../types/migration.js";
-import { DynamoDBExportKey } from "../export/types/dynamodb_table_exporter.js";
+import type { DynamoDBExportKey } from "../types/dynamodb_export_key.js";
 
 type MigrationRecord = {
   action: "run" | "export";
