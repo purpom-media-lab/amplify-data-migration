@@ -65,13 +65,13 @@ import {
   ModelTransformer,
 } from "@purpom-media-lab/amplify-data-migration";
 
-export default class Migration_1725285846599 implements Migration {
+export default class AddCompletedField_1725285846599 implements Migration {
   readonly name = "add_completed_field";
   readonly timestamp = 1725285846599;
   async run(context: MigrationContext) {
     type OldTodo = { id: string; content: string };
     type NewTodo = { id: string; content: string; completed: boolean };
-    const transformer: ModelTransformer<NewTodo, OldTodo> = async (
+    const transformer: ModelTransformer<OldTodo, NewTodo> = async (
       oldModel
     ) => {
       return { ...oldModel, completed: false };
@@ -131,9 +131,9 @@ import {
   ModelTransformer,
 } from "@purpom-media-lab/amplify-data-migration";
 
-export default class Migration_1725285846599 implements Migration {
-  readonly name = "chnage_book_key";
-  readonly timestamp = 1725285846599;
+export default class ChangeBookKey_1725285846600 implements Migration {
+  readonly name = "change_book_key";
+  readonly timestamp = 1725285846600;
 
   async export(
     context: ExportContext
@@ -146,10 +146,16 @@ export default class Migration_1725285846599 implements Migration {
   async run(context: MigrationContext) {
     type OldBook = { id: string; author: string; title: string };
     type NewBook = { author: string; title: string };
-    const transformer: ModelTransformer<NewBook, OldBook> = async (
+    const newKeys: string[] = [];
+    const transformer: ModelTransformer<OldBook, NewBook> = async (
       oldModel
     ) => {
-      const { id, newModel } = oldModel;
+      const { id, ...newModel } = oldModel;
+      if (newKeys.includes(`${newModel.author}:${newModel.title}`)) {
+        // Skip if the same key already exists.
+        return null;
+      }
+      newKeys.push(`${newModel.author}:${newModel.title}`);
       return newModel;
     };
     // Import exported data to new Book table.
