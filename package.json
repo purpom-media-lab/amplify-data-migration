@@ -1,5 +1,5 @@
 {
-  "name": "amplify-data-migration",
+  "name": "@purpom-media-lab/amplify-data-migration",
   "version": "1.0.0",
   "description": "Amplify Data Migration Tool",
   "bin": {
