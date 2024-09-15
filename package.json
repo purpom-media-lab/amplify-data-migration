@@ -2,12 +2,23 @@
   "name": "@purpom-media-lab/amplify-data-migration",
   "version": "1.0.0",
   "description": "Amplify Data Migration Tool",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/purpom-media-lab/amplify-data-migration.git"
+  },
+  "bugs": {
+    "url": "https://github.com/purpom-media-lab/amplify-data-migration/issues"
+  },
   "bin": {
     "data-migration": "lib/data-migration.js"
   },
+  "license": "Apache-2.0",
   "engines": {
     "node": ">=20"
   },
+  "files": [
+    "lib"
+  ],
   "type": "module",
   "scripts": {
     "build": "tsc",
@@ -22,7 +33,6 @@
     "migration"
   ],
   "author": "Masahiko Murakami <fossamagna2@gmail.com>",
-  "license": "MIT",
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.0",
     "@types/node": "^22.5.0",
