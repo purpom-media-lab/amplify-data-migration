@@ -1,4 +1,4 @@
-import { createMigrationClassContent } from "./create_migration_file_content";
+import { createMigrationClassContent } from "./create_migration_file_content.js";
 import { describe, test, expect } from "vitest";
 
 describe("createMigrationFileContent", () => {
