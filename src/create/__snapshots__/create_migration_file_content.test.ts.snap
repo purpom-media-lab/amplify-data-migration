@@ -1,0 +1,40 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`createMigrationFileContent > should return Migration file content 1`] = `
+"import {
+  DynamoDBExportKey,
+  ExportContext,
+  Migration,
+  MigrationContext,
+  ModelTransformer,
+} from "@purpom-media-lab/ampify-data-migration";
+
+export default class TestMigration_1726384783922 implements Migration {
+  readonly name = "test_migration";
+  readonly timestamp = 1726384783922;
+
+  // You should implement export method if you want to export data from the table.
+  // async export(
+  //   context: ExportContext
+  // ): Promise<Record<string, DynamoDBExportKey>> {
+  //   // Export table to S3 bucket with Point-in-Time Recovery
+  //   const key = await context.modelClient.exportModel("<Your Model name>");
+  //   return { <Your Model name>: key };
+  // }
+
+  async run(context: MigrationContext) {
+    // type OldModel = {};
+    // type NewModel = {};
+    // const transformer: ModelTransformer<OldModel, NewModel> = async (
+    //   oldModel
+    // ) => {
+    //   return oldModel;
+    // };
+    // If you run import exported data to new a table, you can use this code.
+    // await context.modelClient.runImport("<Your Model name>", transformer);
+    // If you run update table, you can use this code.
+    // await context.modelClient.updateTable("<Your Model name>", transformer);
+  }
+}
+"
+`;

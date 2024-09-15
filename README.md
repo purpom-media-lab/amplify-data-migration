@@ -81,6 +81,12 @@ export default class AddCompletedField_1725285846599 implements Migration {
 }
 ```
 
+以下のように、マイグレーションの名前を指定してマイグレーションファイルの雛形を作成できます。
+
+```sh
+data-migration create --name <migration file name> --migrationsDir <path to migration file directory>
+```
+
 ### Run Migrations
 
 以下のように`data-migration migrate`コマンドを実行すると、`amplify-data-migration`は実行されていないマイグレーションを実行します。
