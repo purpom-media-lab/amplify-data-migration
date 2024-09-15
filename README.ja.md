@@ -1,12 +1,12 @@
 # Amplify Data Migration Tool
 
-- [日本語](./README.ja.md)
+- [English](./README.md)
 
-### Features
+### 機能
 
-- Implementation of migration in TypeScript
-- Execute export using DynamoDB Point-In-Time Recovery
-- Management of executed migrations
+- TypeScript でのマイグレーション処理の実装
+- DynamoDB Point-In-Time Recovery を利用した export の実行
+- 実行したマイグレーションの管理
 
 ## Installation
 
@@ -18,9 +18,9 @@ npm install -D @purpom-media-lab/amplify-data-migration
 
 ### Initialize
 
-Creating a migration table
+マイグレーションテーブルの作成
 
-At the beginning (each app & branch), create a migration table and S3 bucket with the following command.
+最初（アプリ&環境毎）に、以下のコマンドでマイグレーションテーブルと S3 バケットを作成します。
 
 ```sh
 data-migration init --appId '<appId>' --branch '<branch name>' --profile '<profile name>'
@@ -28,7 +28,7 @@ data-migration init --appId '<appId>' --branch '<branch name>' --profile '<profi
 
 ### Create Migration File
 
-Suppose the `Todo` model has already existed as follows.
+既に以下のように`Todo`モデルが存在したとします。
 
 ```ts
 const schema = a.schema({
@@ -41,7 +41,7 @@ const schema = a.schema({
 });
 ```
 
-After the release, you will need a `completed` field, and you need to add the `completed` field to the `Todo` model as follows.
+リリース後に`completed`フィールドが必要になり、以下のように`Todo`モデルに`completed`フィールドを追加する必要があります。
 
 ```ts
 const schema = a.schema({
@@ -54,11 +54,11 @@ const schema = a.schema({
 });
 ```
 
-The change in the model adds a `completed` field, but the existing data in DynamoDB table does not have the `completed` field.
-An error occurs when you try to get an existing record without the field, which is a required field, which is a required field, via `AppSync`.
+モデルの変更により、`completed`フィールドが追加されますが、DynamoDB にある既存のデータには`completed`フィールドは存在しません。
+このままでは必須のフィールドである `completed` フィールドがない既存レコードを `AppSync` 経由で取得しようとするとエラーが発生します。
 
-You can implement migration processing in the implementation class with the` Migration` interface as follows.
-The following is an example of a migration that adds a `completed` field with the value `false`.
+`amplify-data-migration`では以下のように`Migration`インタフェースを実装クラスにマイグレーション処理を実装します。
+以下は、`false`をもつ`completed`フィールドを追加するマイグレーションです。
 
 ```ts
 import {
@@ -83,7 +83,7 @@ export default class AddCompletedField_1725285846599 implements Migration {
 }
 ```
 
-You can create a migration file template by specifying the name of the migration:
+以下のように、マイグレーションの名前を指定してマイグレーションファイルの雛形を作成できます。
 
 ```sh
 data-migration create --name <migration file name> --migrationsDir <path to migration file directory>
@@ -91,7 +91,7 @@ data-migration create --name <migration file name> --migrationsDir <path to migr
 
 ### Run Migrations
 
-When you run the `data-migration migrate` command as shown below, `amplify-data-migration` will run pending migrations.
+以下のように`data-migration migrate`コマンドを実行すると、`amplify-data-migration`は実行されていないマイグレーションを実行します。
 
 ```sh
 data-migration migrate --appId '<appId>' --branch '<branch name>' --migrationsDir ./dist/migrations/ --profile '<profile name>'
@@ -99,7 +99,7 @@ data-migration migrate --appId '<appId>' --branch '<branch name>' --migrationsDi
 
 ### Migrate from export data with Point-in-Time Recovery
 
-Suppose the `book` model exists as follows.
+以下のように`Book`モデルが存在したとします。
 
 ```ts
 const schema = a.schema({
@@ -110,7 +110,7 @@ const schema = a.schema({
 });
 ```
 
-After the release, it is necessary to change the `author`,` title` field as a key, and suppose you have changed the `Book` model as follows.
+リリース後に`author`, `title`フィールドをキーにする変更が必要になり、以下のように`Book`モデルを変更したとします。
 
 ```ts
 const schema = a.schema({
@@ -124,12 +124,12 @@ const schema = a.schema({
 });
 ```
 
-If you change the model key on AWS Amplify, the DynamoDB table is replace and the existing data is deleted.
-Therefore, the existing data cannot be migrated by implementing the `Migration.run` function alone.
-In this case, the export of existing data is implemented with the `Migration.export` function.
+AWS Amplify ではモデルのキーを変更した場合、DynamoDB テーブルが replace され、既存データが破棄されます。
+そのため、`Migration.run`関数の実装だけでは既存データをマイグレーションできません。
+この場合、`Migration.export`関数で既存データのエクスポートを実装します。
 
-In the `Migration.export` function, you can export the existing data of the model by calling `context.modelClient.exportModel`.
-And you can import the exported data into a table after replace by calling `context.modelClient.runImport` in `Migration.run` function.
+`Migration.export`関数では`context.modelClient.exportModel`を呼び出すことでモデルの既存データをエクスポートすることができます。
+そして、`Migration.run`関数で`context.modelClient.runImport`を呼び出すことでエクスポートしたデータを replace 後のテーブルにインポートすることができます。
 
 ```ts
 import {
@@ -172,8 +172,9 @@ export default class ChangeBookKey_1725285846600 implements Migration {
 }
 ```
 
-Run the `data-migration export` command as follows, and `amplify-data-migration` executes an export for pending migration.
-Usually, this command is assumed to be called before executing the deployment with `npx ampx pipeline-deploy`.
+以下のように`data-migration export`コマンドを実行すると、`amplify-data-migration`は実行されていないマイグレーションの export を実行します。
+通常、このコマンドは`npx ampx pipeline-deploy`でデプロイを実行する前に呼び出すことを想定しています。
+`
 
 ```sh
 data-migration export --appId '<appId>' --branch '<branch name>' --profile '<profile name>'
@@ -181,7 +182,7 @@ data-migration export --appId '<appId>' --branch '<branch name>' --profile '<pro
 
 ### Destroy
 
-If you no longer want to use the Amplify Data Migration Tool, run the following command to destroy the migration table and S3 bucket.
+Amplify Data Migration Tool の利用をやめる場合、以下のコマンドでマイグレーションテーブルと S3 バケットを破棄します。
 
 ```ts
 data-migration destroy --appId '<appId>' --branch '<branch name>' --profile '<profile name>'
@@ -197,14 +198,14 @@ npm run build
 
 ### Test
 
-We will use [LocalStack](https://github.com/localstack/localstack) for testing.
-Before running the tests, please run the following command to start LocalStack.
+テストには[LocalStack](https://github.com/localstack/localstack)を利用します。
+テスト実行前に以下のコマンドを実行して LoaclStack を起動してください。
 
 ```sh
 docker-compose up
 ```
 
-Run the test by executing the following command:
+以下のコマンドを実行してテストを実行します。
 
 ```sh
 npm test
