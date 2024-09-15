@@ -8,6 +8,7 @@ import { createInitCommand } from "./commands/init/index.js";
 import { createDestroyCommand } from "./commands/destroy/index.js";
 import { createMigrateCommand } from "./commands/migrate/index.js";
 import { createExportCommand } from "./commands/export/index.js";
+import { createCreateCommand } from "./commands/create/index.js";
 
 const packageJson = JSON.parse(
   await fsp.readFile(
@@ -29,6 +30,7 @@ export const createMainParser = (libraryVersion: string): Argv => {
     .command(createDestroyCommand())
     .command(createMigrateCommand())
     .command(createExportCommand())
+    .command(createCreateCommand())
     .help()
     .demandCommand()
     .strictCommands()
