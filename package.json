@@ -13,16 +13,18 @@
     "build": "tsc",
     "watch": "npm run build -- --watch",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "release": "npm run build && changeset publish"
   },
   "keywords": [
     "amplify",
     "data",
     "migration"
   ],
-  "author": "",
+  "author": "Masahiko Murakami <fossamagna2@gmail.com>",
   "license": "MIT",
   "devDependencies": {
+    "@changesets/changelog-github": "^0.5.0",
     "@types/node": "^22.5.0",
     "@types/yargs": "^17.0.33",
     "@vitest/coverage-v8": "^2.0.5",
@@ -39,6 +41,7 @@
     "@aws-sdk/credential-providers": "^3.645.0",
     "@aws-sdk/lib-dynamodb": "^3.645.0",
     "@aws-sdk/util-dynamodb": "^3.645.0",
+    "@changesets/cli": "^2.27.8",
     "@smithy/node-config-provider": "^3.1.4",
     "yargs": "^17.7.2"
   }
