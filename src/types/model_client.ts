@@ -2,7 +2,12 @@ import type { AttributeValue } from "@aws-sdk/client-dynamodb";
 import type { DynamoDBExportKey } from "./dynamodb_export_key.js";
 
 /**
- * データマイグレーションでのデータの変換を行う関数
+ * A function that converts data in data migration.
+ * This function is used to convert the data of the old model to the data of the new model.
+ *
+ * @typeParam OldModel - The type of the old model
+ * @typeParam NewModel - The type of the new model
+ * @returns The new model or null. If null is returned, the record will be deleted.
  */
 export interface ModelTransformer<
   OldModel extends {} = {},
@@ -12,15 +17,18 @@ export interface ModelTransformer<
 }
 
 /**
- * データマイグレーションで実際にデータを変更する処理を提供するクラスです。
- * ModelClientが提供する機能以外で必要なマイグレーション処理はAWS SDKを直接利用して実装してください。
+ * This is a interface that provides processing to actually change data by data migration.
+ *
+ * @remarks
+ * Any migration processing required other than the functionality provided by ModelClient should be implemented directly using the AWS SDK.
  */
 export interface ModelClient {
   /**
-   * 指定したモデルのレコードを更新します。
-   * @param modelName モデル名
-   * @param transformer フィールドの値を変換する
-   * @param options オプション
+   * Update the record of the specified model.
+   *
+   * @param modelName - Model name
+   * @param transformer - function to convert the value of the field
+   * @param options - option
    */
   updateModel(
     modelName: string,
@@ -34,13 +42,28 @@ export interface ModelClient {
     }
   ): Promise<void>;
 
+  /**
+   * Export the data of the specified model (table).
+   *
+   * The exported data can be imported using the runImport method.
+   *
+   * @param modelName - Model name
+   * @returns The key to the exported data
+   */
   exportModel(modelName: string): Promise<DynamoDBExportKey>;
 
   /**
-   * exportされたモデル（テーブル）のデータをインポートします。
-   * @param modelName モデル名
-   * @param transformer モデルを変換する
-   * @param options オプション
+   * Import the data of the specified model (table).
+   * The data to be imported must be exported using the exportModel method.
+   * The data is transformed by the transformer function before being imported.
+   * If the transformer function returns null, the record will be deleted.
+   * If the transformer function returns a value, the record will be updated with the returned value.
+   * If the transformer function throws an error, the import process will be aborted.
+   * If the import process is aborted, the data may be partially imported.
+   *
+   * @param modelName - Model name
+   * @param transformer - function to convert the value of the field
+   * @param options - option
    */
   runImport(
     modelName: string,

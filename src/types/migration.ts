@@ -1,21 +1,34 @@
 import type { ExportContext, MigrationContext } from "./context.js";
 import type { DynamoDBExportKey } from "./dynamodb_export_key.js";
 
+/**
+ * Migrations should implement this interface
+ */
 export interface Migration {
-  readonly name: string;
-  readonly timestamp: number;
   /**
-   * run関数でマイグレーションを実行する際に利用するエクスポートデータを作成します。
-   * DynamnoDBテーブルのキーが変更される場合にはDynamoDBテーブルがreplaceされるので、
-   * この関数でデータをエクスポートしておき、run関数でそれを利用して新しいテーブルにデータをインポートします。
-   * この関数はDynamoDBに変更が加えられる前（デプロイ前）に実行されます。
+   * This migration name, defaults to class name.
+   */
+  readonly name: string;
+
+  /**
+   * This migration timestamp, defaults to current time.
+   */
+  readonly timestamp: number;
+
+  /**
+   * Create export data to used to migration in the run method.
+   * If the key of the dynamnodb table changes, the dynamodb table will be replace, so export data with this method and use it with the run method to import data into a new table.
+   * This method is executed before the dynamodb is changed (before the deployment).
    *
-   * @return モデル名を属性名としてエクスポートされたデータのS3キーを値とするオブジェクト
+   * @param context - The context object that contains the model clients
+   * @returns An object where the keys are the model names and the values ​​are the S3 keys of the exported data
    */
   export?(context: ExportContext): Promise<Record<string, DynamoDBExportKey>>;
+
   /**
-   * データのマイグレーションを実行します。
-   * export関数でスキーマ変更前のテーブルデータをエクスポートしている場合は、そのデータを利用することもできます。
+   * Run the data migration.
+   *
+   * @param context - The context object that contains the model clients
    */
   run(context: MigrationContext): Promise<void>;
 }
