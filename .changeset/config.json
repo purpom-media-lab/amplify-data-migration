@@ -1,6 +1,11 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@3.0.3/schema.json",
-  "changelog": "@changesets/cli/changelog",
+  "changelog": [
+    "@changesets/changelog-github",
+    {
+      "repo": "purpom-media-lab/amplify-data-migration"
+    }
+  ],
   "commit": false,
   "fixed": [],
   "linked": [],
