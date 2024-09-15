@@ -13,14 +13,15 @@
     "build": "tsc",
     "watch": "npm run build -- --watch",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "release": "npm run build && changeset publish"
   },
   "keywords": [
     "amplify",
     "data",
     "migration"
   ],
-  "author": "",
+  "author": "Masahiko Murakami <fossamagna2@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.0",
