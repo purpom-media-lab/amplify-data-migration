@@ -19,7 +19,7 @@ jobs:
       - name: Update PR
         uses: StafflinePeoplePlus/dependabot-changesets@v0.1.3
         with:
-          owner: MyGithubUser
-          repo: my-cool-repo
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.event.repository.name }}
           pr-number: ${{ github.event.pull_request.number }}
           token: ${{ secrets.GITHUB_TOKEN }}
