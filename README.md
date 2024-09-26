@@ -35,7 +35,6 @@ const schema = a.schema({
   Todo: a
     .model({
       content: a.string(),
-      completed: a.boolean().required(),
     })
     .authorization((allow) => [allow.owner()]),
 });
