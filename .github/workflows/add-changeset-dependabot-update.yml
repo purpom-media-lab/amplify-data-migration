@@ -23,3 +23,4 @@ jobs:
           repo: ${{ github.event.repository.name }}
           pr-number: ${{ github.event.pull_request.number }}
           token: ${{ secrets.GITHUB_TOKEN }}
+          package-name: "@purpom-media-lab/amplify-data-migration"
