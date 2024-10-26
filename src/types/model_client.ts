@@ -16,6 +16,16 @@ export interface ModelTransformer<
   (oldModel: OldModel): Promise<NewModel | null>;
 }
 
+/***
+ * A generator function that generates the model data.
+ *
+ * @typeParam Model - The type of the model
+ * @returns The model data
+ */
+export interface ModelGenerator<Model> {
+  (): AsyncGenerator<Model, void, void>;
+}
+
 /**
  * This is a interface that provides processing to actually change data by data migration.
  *
@@ -41,6 +51,20 @@ export interface ModelClient {
       };
     }
   ): Promise<void>;
+
+  /**
+   * Put the specified model.
+   * @param modelName - Model name
+   * @param generator - generator function  of the model
+   */
+  putModel(modelName: string, generator: ModelGenerator<any>): Promise<void>;
+
+  /**
+   * Put the specified model.
+   * @param modelName - Model name
+   * @param models - Array of model to put
+   */
+  putModel<Model>(modelName: string, models: Model[]): Promise<void>;
 
   /**
    * Export the data of the specified model (table).

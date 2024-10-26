@@ -5,7 +5,11 @@ import {
   BatchWriteCommandInput,
   DynamoDBDocumentClient,
 } from "@aws-sdk/lib-dynamodb";
-import type { ModelClient, ModelTransformer } from "../types/model_client.js";
+import type {
+  ModelClient,
+  ModelGenerator,
+  ModelTransformer,
+} from "../types/model_client.js";
 import type { AmplifyDynamoDBTable } from "./types/dynamodb_table_provider.js";
 import type {
   DynamoDBTableExporterFactory,
@@ -42,6 +46,69 @@ export class DynamoDBModelClient implements ModelClient {
     );
     this.dynamoDBTableExporterFactory = dynamoDBTableExporterFactory;
     this.dynamoDBTableExportFactory = dynamoDBTableExportFactory;
+  }
+  putModel(modelName: string, generator: ModelGenerator<any>): Promise<void>;
+  putModel<Model>(modelName: string, models: Model[]): Promise<void>;
+  putModel(modelName: string, generator: ModelGenerator<any>): Promise<void>;
+
+  putModel<Model>(modelName: string, ...models: Model[]): Promise<void>;
+
+  async putModel<Model>(
+    modelName: string,
+    generator?: ModelGenerator<Model> | Model[]
+  ): Promise<void> {
+    if (this.isModelGenerator(generator)) {
+      const table = this.tables[modelName];
+      if (!table) {
+        throw new Error(`Table not found for model: ${modelName}`);
+      }
+      const tableName = table.tableName;
+      const newModels: any[] = [];
+      for await (const model of generator()) {
+        newModels.push(model);
+        if (newModels.length === 25) {
+          const input = this.toBatchWriteItemInput(tableName, newModels);
+          await this.dynamoDBDocumentClient.send(new BatchWriteCommand(input));
+          newModels.length = 0;
+        }
+      }
+      if (newModels.length > 0) {
+        const input = this.toBatchWriteItemInput(tableName, newModels);
+        await this.dynamoDBDocumentClient.send(new BatchWriteCommand(input));
+      }
+    } else if (Array.isArray(generator)) {
+      const table = this.tables[modelName];
+      if (!table) {
+        throw new Error(`Table not found for model: ${modelName}`);
+      }
+      const tableName = table.tableName;
+      await Promise.all(
+        this.splitArray(generator, 25).map(async (items) => {
+          const input: BatchWriteCommandInput = this.toBatchWriteItemInput(
+            tableName,
+            items as Record<string, any>[]
+          );
+          await this.dynamoDBDocumentClient.send(new BatchWriteCommand(input));
+        })
+      );
+    } else {
+      throw new Error(
+        `${typeof generator} is not supported arguemnt type. Supported types are AsyncGenerator or Array.`
+      );
+    }
+  }
+
+  private splitArray<T>(array: T[], size: number): T[][] {
+    return new Array(Math.ceil(array.length / size))
+      .fill(null)
+      .map((_, i) => array.slice(size * i, size * (i + 1)));
+  }
+
+  private isModelGenerator<T>(obj: unknown): obj is ModelGenerator<T> {
+    return (
+      typeof obj === "function" &&
+      obj.constructor.name === "AsyncGeneratorFunction"
+    );
   }
 
   async updateModel(

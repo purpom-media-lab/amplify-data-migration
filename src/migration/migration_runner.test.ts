@@ -29,6 +29,7 @@ import {
 } from "./types/dynamodb_table_provider.js";
 import { S3Client } from "@aws-sdk/client-s3";
 import { ExportContext } from "../types/context.js";
+import { ModelGenerator } from "../types/model_client.js";
 
 describe("MigrationRunner", () => {
   let s3Client: S3Client;
@@ -278,6 +279,12 @@ describe("MigrationRunner", () => {
           runImport: vi
             .fn()
             .mockRejectedValue(new Error("Function not implemented.")),
+          putModel: function (
+            modelName: string,
+            generator: ModelGenerator<any> | any[]
+          ): Promise<void> {
+            throw new Error("Function not implemented.");
+          },
         },
       };
 
