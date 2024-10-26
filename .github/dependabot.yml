@@ -9,3 +9,7 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+    groups:
+      aws-sdk-dependencies:
+        patterns:
+          - "@aws-sdk/*"
