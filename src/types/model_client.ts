@@ -57,7 +57,10 @@ export interface ModelClient {
    * @param modelName - Model name
    * @param generator - generator function  of the model
    */
-  putModel(modelName: string, generator: ModelGenerator<any>): Promise<void>;
+  putModel<Model>(
+    modelName: string,
+    generator: ModelGenerator<Model>
+  ): Promise<void>;
 
   /**
    * Put the specified model.

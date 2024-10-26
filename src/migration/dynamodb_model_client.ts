@@ -47,10 +47,11 @@ export class DynamoDBModelClient implements ModelClient {
     this.dynamoDBTableExporterFactory = dynamoDBTableExporterFactory;
     this.dynamoDBTableExportFactory = dynamoDBTableExportFactory;
   }
-  putModel(modelName: string, generator: ModelGenerator<any>): Promise<void>;
-  putModel<Model>(modelName: string, models: Model[]): Promise<void>;
-  putModel(modelName: string, generator: ModelGenerator<any>): Promise<void>;
 
+  putModel<Model>(
+    modelName: string,
+    generator: ModelGenerator<Model>
+  ): Promise<void>;
   putModel<Model>(modelName: string, ...models: Model[]): Promise<void>;
 
   async putModel<Model>(
