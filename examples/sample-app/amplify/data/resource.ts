@@ -19,7 +19,6 @@ const schema = a.schema({
   //     title: a.string(),
   //   })
   //   .authorization((allow) => [allow.authenticated()]),
-
   // Step2 schema
   Todo: a
     .model({
@@ -34,6 +33,11 @@ const schema = a.schema({
     })
     .identifier(["author", "title"])
     .authorization((allow) => [allow.authenticated()]),
+  Profile: a
+    .model({
+      username: a.string(),
+    })
+    .authorization((allow) => [allow.owner()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;

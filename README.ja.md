@@ -28,6 +28,14 @@ data-migration init --appId '<appId>' --branch '<branch name>' --profile '<profi
 
 ### Create Migration File
 
+以下のように、マイグレーションの名前を指定してマイグレーションファイルの雛形を作成できます。
+
+```sh
+data-migration create --name <migration file name> --migrationsDir <path to migration file directory>
+```
+
+#### Update Models
+
 既に以下のように`Todo`モデルが存在したとします。
 
 ```ts
@@ -82,10 +90,80 @@ export default class AddCompletedField_1725285846599 implements Migration {
 }
 ```
 
-以下のように、マイグレーションの名前を指定してマイグレーションファイルの雛形を作成できます。
+#### Put Models
 
-```sh
-data-migration create --name <migration file name> --migrationsDir <path to migration file directory>
+リリース前に存在しなかった`Profile`というモデルを追加したとします。`Profile`モデルはユーザー毎に存在し、
+アプリケーションは`Profile`モデルを必要とするため、マイグレーションでユーザー毎に`Profile`を DynamoDB に登録する必要があります。
+
+```ts
+const schema = a.schema({
+  Profile: a
+    .model({
+      name: a.string().requred(),
+    })
+    .authorization((allow) => [allow.owner()]),
+});
+```
+
+`amplify-data-migration`では以下のように`ModelClient.putModel`メソッドを使って新規のデータを登録することができます。
+以下は、Cognit の UserPool のユーザーに対応する`Profile`を新規登録するマイグレーションです。
+
+```ts
+import {
+  Migration,
+  MigrationContext,
+  ModelGenerator,
+} from "@purpom-media-lab/amplify-data-migration";
+import {
+  CognitoIdentityProviderClient,
+  ListUsersCommand,
+} from "@aws-sdk/client-cognito-identity-provider";
+
+const client = new CognitoIdentityProviderClient();
+
+type Profile = {
+  id: string;
+  name: string;
+  owner: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export default class AddProfileModel_1725285846601 implements Migration {
+  readonly name = "add_profile_model";
+  readonly timestamp = 1725285846601;
+  private userPoolId: string = process.env.USER_POOL_ID!;
+
+  async run(context: MigrationContext) {
+    const userPoolId = this.userPoolId;
+    const generator: ModelGenerator<Profile> = async function* () {
+      let token;
+      do {
+        const command: ListUsersCommand = new ListUsersCommand({
+          UserPoolId: userPoolId,
+          Limit: 20,
+          PaginationToken: token,
+        });
+        const response = await client.send(command);
+        token = response.PaginationToken;
+        for (const user of response.Users ?? []) {
+          const owner = `${user.Username}::${user.Username}`;
+          const now = new Date().toISOString();
+          yield {
+            id: crypto.randomUUID(),
+            name:
+              user?.Attributes?.find((attribute) => attribute.Name === "Email")
+                ?.Value ?? "",
+            owner,
+            createdAt: now,
+            updatedAt: now,
+          };
+        }
+      } while (token);
+    };
+    await context.modelClient.putModel("Profile", generator);
+  }
+}
 ```
 
 ### Run Migrations

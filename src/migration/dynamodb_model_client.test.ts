@@ -124,4 +124,68 @@ describe("DynamoDBModelClient", () => {
       expect(output.Items).toContainEqual({ id: "3", title: "TITLE_3" });
     });
   });
+
+  describe("putModel", () => {
+    test("puts model with generator function", async (context) => {
+      await modelClient.putModel("Todo", async function* () {
+        yield { id: "4", title: "title_4" };
+        yield { id: "5", title: "title_5" };
+        yield { id: "6", title: "title_6" };
+      });
+
+      const todoTableName = `TodoTable${context.task.id}`;
+      const output = await dynamoDBDocumentClient.send(
+        new ScanCommand({ TableName: todoTableName })
+      );
+      expect(output.Count).toBe(6);
+      expect(output.Items).toContainEqual({ id: "4", title: "title_4" });
+      expect(output.Items).toContainEqual({ id: "5", title: "title_5" });
+      expect(output.Items).toContainEqual({ id: "6", title: "title_6" });
+    });
+
+    test("puts model with generator function returning over 25 models", async (context) => {
+      await modelClient.putModel("Todo", async function* () {
+        for (let i = 0; i < 30; i++) {
+          yield { id: `${i}`, title: `title_${i}` };
+        }
+      });
+
+      const todoTableName = `TodoTable${context.task.id}`;
+      const output = await dynamoDBDocumentClient.send(
+        new ScanCommand({ TableName: todoTableName })
+      );
+      expect(output.Count).toBe(30);
+    });
+
+    test("puts model with array of models", async (context) => {
+      await modelClient.putModel("Todo", [
+        { id: "4", title: "title_4" },
+        { id: "5", title: "title_5" },
+        { id: "6", title: "title_6" },
+      ]);
+
+      const todoTableName = `TodoTable${context.task.id}`;
+      const output = await dynamoDBDocumentClient.send(
+        new ScanCommand({ TableName: todoTableName })
+      );
+      expect(output.Count).toBe(6);
+      expect(output.Items).toContainEqual({ id: "4", title: "title_4" });
+      expect(output.Items).toContainEqual({ id: "5", title: "title_5" });
+      expect(output.Items).toContainEqual({ id: "6", title: "title_6" });
+    });
+
+    test("puts model with array of over 25 models", async (context) => {
+      const models = [];
+      for (let i = 0; i < 30; i++) {
+        models.push({ id: `${i}`, title: `title_${i}` });
+      }
+      await modelClient.putModel("Todo", models);
+
+      const todoTableName = `TodoTable${context.task.id}`;
+      const output = await dynamoDBDocumentClient.send(
+        new ScanCommand({ TableName: todoTableName })
+      );
+      expect(output.Count).toBe(30);
+    });
+  });
 });

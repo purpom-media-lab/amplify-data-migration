@@ -28,6 +28,14 @@ data-migration init --appId '<appId>' --branch '<branch name>' --profile '<profi
 
 ### Create Migration File
 
+You can create a migration file template by specifying the name of the migration:
+
+```sh
+data-migration create --name <migration file name> --migrationsDir <path to migration file directory>
+```
+
+#### Update Models
+
 Suppose the `Todo` model has already existed as follows.
 
 ```ts
@@ -82,10 +90,79 @@ export default class AddCompletedField_1725285846599 implements Migration {
 }
 ```
 
-You can create a migration file template by specifying the name of the migration:
+#### Put Models
 
-```sh
-data-migration create --name <migration file name> --migrationsDir <path to migration file directory>
+Suppose you add a `Profile` model that did not exist before the release. The `Profile` model exists for each user, Since the application needs the `Profile` model, you need to register a `Profile` for each user in DynamoDB in the migration.
+
+```ts
+const schema = a.schema({
+  Profile: a
+    .model({
+      name: a.string().requred(),
+    })
+    .authorization((allow) => [allow.owner()]),
+});
+```
+
+You can use the `ModelClient.putModel` method to register new data in `amplify-data-migration` as follows
+The migration to register a new `Profile` corresponding to a user in Cognit's UserPool is as follows
+
+```ts
+import {
+  Migration,
+  MigrationContext,
+  ModelGenerator,
+} from "@purpom-media-lab/amplify-data-migration";
+import {
+  CognitoIdentityProviderClient,
+  ListUsersCommand,
+} from "@aws-sdk/client-cognito-identity-provider";
+
+const client = new CognitoIdentityProviderClient();
+
+type Profile = {
+  id: string;
+  name: string;
+  owner: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export default class AddProfileModel_1725285846601 implements Migration {
+  readonly name = "add_profile_model";
+  readonly timestamp = 1725285846601;
+  private userPoolId: string = process.env.USER_POOL_ID!;
+
+  async run(context: MigrationContext) {
+    const userPoolId = this.userPoolId;
+    const generator: ModelGenerator<Profile> = async function* () {
+      let token;
+      do {
+        const command: ListUsersCommand = new ListUsersCommand({
+          UserPoolId: userPoolId,
+          Limit: 20,
+          PaginationToken: token,
+        });
+        const response = await client.send(command);
+        token = response.PaginationToken;
+        for (const user of response.Users ?? []) {
+          const owner = `${user.Username}::${user.Username}`;
+          const now = new Date().toISOString();
+          yield {
+            id: crypto.randomUUID(),
+            name:
+              user?.Attributes?.find((attribute) => attribute.Name === "Email")
+                ?.Value ?? "",
+            owner,
+            createdAt: now,
+            updatedAt: now,
+          };
+        }
+      } while (token);
+    };
+    await context.modelClient.putModel("Profile", generator);
+  }
+}
 ```
 
 ### Run Migrations
