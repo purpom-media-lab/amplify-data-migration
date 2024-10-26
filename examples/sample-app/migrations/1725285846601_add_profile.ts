@@ -31,20 +31,22 @@ export default class AddProfileModel_1725285846601 implements Migration {
       do {
         const command: ListUsersCommand = new ListUsersCommand({
           UserPoolId: userPoolId,
-          Limit: 100,
+          Limit: 20,
           PaginationToken: token,
         });
         const response = await client.send(command);
         token = response.PaginationToken;
         for (const user of response.Users ?? []) {
+          const owner = `${user.Username}::${user.Username}`;
+          const now = new Date().toISOString();
           yield {
             id: crypto.randomUUID(),
             name:
               user?.Attributes?.find((attribute) => attribute.Name === "Email")
                 ?.Value ?? "",
-            owner: user.Username!,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+            owner,
+            createdAt: now,
+            updatedAt: now,
           };
         }
       } while (token);
