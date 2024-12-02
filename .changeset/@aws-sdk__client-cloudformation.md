@@ -2,4 +2,4 @@
 "@purpom-media-lab/amplify-data-migration": patch
 ---
 
-Bump @aws-sdk/client-cloudformation from 3.645.0 to 3.682.0
+Bump @aws-sdk/client-cloudformation from 3.645.0 to 3.699.0
