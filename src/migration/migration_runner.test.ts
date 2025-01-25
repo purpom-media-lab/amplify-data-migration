@@ -40,6 +40,10 @@ describe("MigrationRunner", () => {
   let migrationRunner: MigrationRunner;
 
   beforeAll(() => {
+    s3Client = new S3Client({
+      endpoint: `http://s3.localhost.localstack.cloud:4566`,
+      region: "ap-northeast-1",
+    });
     dynamoDBClient = new DynamoDBClient({
       endpoint: "http://localhost:4566",
       region: "ap-northeast-1",
