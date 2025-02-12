@@ -2,4 +2,4 @@
 "@purpom-media-lab/amplify-data-migration": patch
 ---
 
-Bump @vitest/coverage-v8 from 2.0.5 to 2.1.9
+Bump vitest from 2.1.8 to 2.1.9
