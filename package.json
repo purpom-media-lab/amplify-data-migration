@@ -41,7 +41,7 @@
     "aws-sdk-client-mock": "^4.0.1",
     "glob": "^11.0.0",
     "typescript": "^5.5.4",
-    "vitest": "^2.0.5"
+    "vitest": "^3.1.1"
   },
   "dependencies": {
     "@aws-sdk/client-amplify": "^3.645.0",
