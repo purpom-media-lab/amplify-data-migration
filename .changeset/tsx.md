@@ -2,4 +2,4 @@
 "@purpom-media-lab/amplify-data-migration": patch
 ---
 
-Bump aws-cdk-lib from 2.158.0 to 2.198.0
+Bump tsx from 4.19.1 to 4.19.4
