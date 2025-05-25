@@ -2,6 +2,7 @@
   "name": "@purpom-media-lab/amplify-data-migration",
   "version": "1.2.0",
   "description": "Amplify Data Migration Tool",
+  "types": "lib/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/purpom-media-lab/amplify-data-migration.git"
