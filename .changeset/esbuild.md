@@ -2,4 +2,4 @@
 "@purpom-media-lab/amplify-data-migration": patch
 ---
 
-Bump aws-cdk-lib from 2.158.0 to 2.198.0
+Bump esbuild from 0.23.1 to 0.25.4
