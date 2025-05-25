@@ -2,4 +2,4 @@
 "@purpom-media-lab/amplify-data-migration": patch
 ---
 
-Bump vite from 5.4.11 to 6.3.5
+Bump @babel/runtime from 7.26.0 to 7.27.1
