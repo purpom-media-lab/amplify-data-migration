@@ -7,7 +7,7 @@ exports[`createMigrationFileContent > should return Migration file content 1`] =
   Migration,
   MigrationContext,
   ModelTransformer,
-} from "@purpom-media-lab/ampify-data-migration";
+} from "@purpom-media-lab/amplify-data-migration";
 
 export default class TestMigration_1726384783922 implements Migration {
   readonly name = "test_migration";

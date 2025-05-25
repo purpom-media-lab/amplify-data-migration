@@ -9,7 +9,7 @@ export const createMigrationClassContent = (
   Migration,
   MigrationContext,
   ModelTransformer,
-} from "@purpom-media-lab/ampify-data-migration";
+} from "@purpom-media-lab/amplify-data-migration";
 
 export default class ${className}_${timestamp} implements Migration {
   readonly name = "${migrationName}";
