@@ -1,5 +1,11 @@
 # @purpom-media-lab/amplify-data-migration
 
+## 1.2.3
+
+### Patch Changes
+
+- [#126](https://github.com/purpom-media-lab/amplify-data-migration/pull/126) [`472f1e5`](https://github.com/purpom-media-lab/amplify-data-migration/commit/472f1e575cb851cd28c8704f4be2c8354959959b) Thanks [@fossamagna](https://github.com/fossamagna)! - fix: add main field in package.json
+
 ## 1.2.2
 
 ### Patch Changes
