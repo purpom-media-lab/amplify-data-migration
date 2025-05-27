@@ -1,17 +1,17 @@
 {
   "name": "sample-app",
+  "private": true,
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "data-migration": "node ../../lib/data-migration.js",
-    "init": "npm run data-migration -- init",
-    "destroy": "npm run data-migration -- destroy",
+    "init": "pnpm exec data-migration init",
+    "destroy": "pnpm exec data-migration destroy",
     "preexport": "tsc",
-    "export": "npm run data-migration -- export --migrationsDir ./dist/migrations",
+    "export": "pnpm exec data-migration export --migrationsDir ./dist/migrations",
     "premigrate": "tsc",
-    "migrate": "npm run data-migration -- migrate --migrationsDir ./dist/migrations"
+    "migrate": "pnpm exec data-migration migrate --migrationsDir ./dist/migrations"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.679.0",
+    "@purpom-media-lab/amplify-data-migration": "workspace:*",
     "aws-amplify": "^6.6.0"
   }
 }

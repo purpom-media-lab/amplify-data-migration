@@ -20,16 +20,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - name: Run docker-compose
-        uses: hoverkraft-tech/compose-action@v2.0.1
+      - uses: pnpm/action-setup@v4
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "npm"
-      - run: npm ci
-      - run: npm run build
-      - run: npm test
+          cache: "pnpm"
+      - name: Run docker-compose
+        uses: hoverkraft-tech/compose-action@v2.2.0
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --if-present --recursive build
+      - run: pnpm test
         env:
           DEFAULT_REGION: ap-northeast-1
           AWS_ACCOUNT_ID: "000000000000"

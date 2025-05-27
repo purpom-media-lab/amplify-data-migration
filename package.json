@@ -1,9 +1,10 @@
 {
-  "name": "@purpom-media-lab/amplify-data-migration",
-  "version": "1.2.3",
+  "name": "@purpom-media-lab/amplify-data-migration-root",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
   "description": "Amplify Data Migration Tool",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "packageManager": "pnpm@10.11.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/purpom-media-lab/amplify-data-migration.git"
@@ -11,32 +12,22 @@
   "bugs": {
     "url": "https://github.com/purpom-media-lab/amplify-data-migration/issues"
   },
-  "bin": {
-    "data-migration": "lib/data-migration.js"
-  },
   "license": "Apache-2.0",
   "engines": {
     "node": ">=20"
   },
-  "files": [
-    "lib"
-  ],
-  "type": "module",
   "scripts": {
-    "build": "tsc",
-    "watch": "npm run build -- --watch",
-    "test": "vitest",
-    "coverage": "vitest run --coverage",
-    "release": "npm run build && changeset publish"
+    "build": "pnpm --if-present --recursive build",
+    "watch": "pnpm build --watch",
+    "test": "vitest --run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest --coverage",
+    "release": "pnpm build && pnpm test && changeset publish"
   },
-  "keywords": [
-    "amplify",
-    "data",
-    "migration"
-  ],
   "author": "Masahiko Murakami <fossamagna2@gmail.com>",
   "devDependencies": {
     "@changesets/changelog-github": "^0.5.0",
+    "@changesets/cli": "^2.27.8",
     "@types/node": "^22.5.0",
     "@types/yargs": "^17.0.33",
     "@vitest/coverage-v8": "^3.1.4",
@@ -44,17 +35,5 @@
     "glob": "^11.0.0",
     "typescript": "^5.5.4",
     "vitest": "^3.1.4"
-  },
-  "dependencies": {
-    "@aws-sdk/client-amplify": "^3.645.0",
-    "@aws-sdk/client-cloudformation": "^3.645.0",
-    "@aws-sdk/client-dynamodb": "^3.645.0",
-    "@aws-sdk/client-s3": "^3.645.0",
-    "@aws-sdk/credential-providers": "^3.645.0",
-    "@aws-sdk/lib-dynamodb": "^3.645.0",
-    "@aws-sdk/util-dynamodb": "^3.645.0",
-    "@changesets/cli": "^2.27.8",
-    "@smithy/node-config-provider": "^4.0.1",
-    "yargs": "^17.7.2"
   }
 }
