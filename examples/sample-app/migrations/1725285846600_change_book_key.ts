@@ -4,7 +4,7 @@ import {
   Migration,
   MigrationContext,
   ModelTransformer,
-} from "../../../lib/index.js";
+} from "@purpom-media-lab/amplify-data-migration";
 
 export default class ChangeBookKey_1725285846600 implements Migration {
   readonly name = "change_book_key";

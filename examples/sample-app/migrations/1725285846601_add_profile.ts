@@ -2,7 +2,7 @@ import {
   Migration,
   MigrationContext,
   ModelGenerator,
-} from "../../../lib/index.js";
+} from "@purpom-media-lab/amplify-data-migration";
 
 import {
   CognitoIdentityProviderClient,

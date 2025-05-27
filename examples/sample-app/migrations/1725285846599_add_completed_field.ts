@@ -2,7 +2,7 @@ import {
   Migration,
   MigrationContext,
   ModelTransformer,
-} from "../../../lib/index.js";
+} from "@purpom-media-lab/amplify-data-migration";
 
 export default class AddCompletedField_1725285846599 implements Migration {
   readonly name = "add_completed_field";
