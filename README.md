@@ -268,7 +268,7 @@ data-migration destroy --appId '<appId>' --branch '<branch name>' --profile '<pr
 ### Build
 
 ```sh
-npm run build
+pnpm build
 ```
 
 ### Test
@@ -283,5 +283,5 @@ docker-compose up
 Run the test by executing the following command:
 
 ```sh
-npm test
+pnpm test
 ```
