@@ -262,26 +262,3 @@ If you no longer want to use the Amplify Data Migration Tool, run the following 
 ```ts
 data-migration destroy --appId '<appId>' --branch '<branch name>' --profile '<profile name>'
 ```
-
-## Development
-
-### Build
-
-```sh
-pnpm build
-```
-
-### Test
-
-We will use [LocalStack](https://github.com/localstack/localstack) for testing.
-Before running the tests, please run the following command to start LocalStack.
-
-```sh
-docker-compose up
-```
-
-Run the test by executing the following command:
-
-```sh
-pnpm test
-```
