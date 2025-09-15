@@ -45,7 +45,7 @@
     "vitest": "^3.1.4"
   },
   "dependencies": {
-    "@aws-sdk/client-amplify": "^3.645.0",
+    "@aws-sdk/client-amplify": "^3.888.0",
     "@aws-sdk/client-cloudformation": "^3.645.0",
     "@aws-sdk/client-dynamodb": "^3.645.0",
     "@aws-sdk/client-s3": "^3.645.0",
