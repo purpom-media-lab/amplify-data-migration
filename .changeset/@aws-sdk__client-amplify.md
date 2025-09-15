@@ -2,4 +2,4 @@
 "@purpom-media-lab/amplify-data-migration": patch
 ---
 
-Bump @aws-sdk/client-amplify from 3.817.0 to 3.821.0
+Bump @aws-sdk/client-amplify from 3.817.0 to 3.888.0
