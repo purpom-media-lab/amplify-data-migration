@@ -29,6 +29,6 @@
   "dependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.679.0",
     "@purpom-media-lab/amplify-data-migration": "workspace:*",
-    "aws-amplify": "^6.6.0"
+    "aws-amplify": "^6.15.6"
   }
 }
