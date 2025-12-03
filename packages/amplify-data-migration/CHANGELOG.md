@@ -1,5 +1,35 @@
 # @purpom-media-lab/amplify-data-migration
 
+## 1.2.4
+
+### Patch Changes
+
+- [#178](https://github.com/purpom-media-lab/amplify-data-migration/pull/178) [`a0cf721`](https://github.com/purpom-media-lab/amplify-data-migration/commit/a0cf7216fa71b5d1b1a7aa2ed74151e1f08c8ccf) Thanks [@fossamagna](https://github.com/fossamagna)! - Bump @aws-amplify/cli-core from 1.1.2 to 1.4.1
+
+- [#178](https://github.com/purpom-media-lab/amplify-data-migration/pull/178) [`a0cf721`](https://github.com/purpom-media-lab/amplify-data-migration/commit/a0cf7216fa71b5d1b1a7aa2ed74151e1f08c8ccf) Thanks [@fossamagna](https://github.com/fossamagna)! - Bump @aws-sdk/client-amplify from 3.817.0 to 3.821.0
+
+- [#178](https://github.com/purpom-media-lab/amplify-data-migration/pull/178) [`a0cf721`](https://github.com/purpom-media-lab/amplify-data-migration/commit/a0cf7216fa71b5d1b1a7aa2ed74151e1f08c8ccf) Thanks [@fossamagna](https://github.com/fossamagna)! - Bump @aws-sdk/client-cloudformation from 3.817.0 to 3.821.0
+
+- [#178](https://github.com/purpom-media-lab/amplify-data-migration/pull/178) [`a0cf721`](https://github.com/purpom-media-lab/amplify-data-migration/commit/a0cf7216fa71b5d1b1a7aa2ed74151e1f08c8ccf) Thanks [@fossamagna](https://github.com/fossamagna)! - Bump @aws-sdk/client-dynamodb from 3.817.0 to 3.821.0
+
+- [#178](https://github.com/purpom-media-lab/amplify-data-migration/pull/178) [`a0cf721`](https://github.com/purpom-media-lab/amplify-data-migration/commit/a0cf7216fa71b5d1b1a7aa2ed74151e1f08c8ccf) Thanks [@fossamagna](https://github.com/fossamagna)! - Bump @aws-sdk/client-s3 from 3.817.0 to 3.821.0
+
+- [#178](https://github.com/purpom-media-lab/amplify-data-migration/pull/178) [`a0cf721`](https://github.com/purpom-media-lab/amplify-data-migration/commit/a0cf7216fa71b5d1b1a7aa2ed74151e1f08c8ccf) Thanks [@fossamagna](https://github.com/fossamagna)! - Bump @aws-sdk/credential-providers from 3.817.0 to 3.821.0
+
+- [#178](https://github.com/purpom-media-lab/amplify-data-migration/pull/178) [`a0cf721`](https://github.com/purpom-media-lab/amplify-data-migration/commit/a0cf7216fa71b5d1b1a7aa2ed74151e1f08c8ccf) Thanks [@fossamagna](https://github.com/fossamagna)! - Bump @aws-sdk/lib-dynamodb from 3.817.0 to 3.821.0
+
+- [#178](https://github.com/purpom-media-lab/amplify-data-migration/pull/178) [`a0cf721`](https://github.com/purpom-media-lab/amplify-data-migration/commit/a0cf7216fa71b5d1b1a7aa2ed74151e1f08c8ccf) Thanks [@fossamagna](https://github.com/fossamagna)! - Bump @aws-sdk/util-dynamodb from 3.817.0 to 3.821.0
+
+- [#178](https://github.com/purpom-media-lab/amplify-data-migration/pull/178) [`a0cf721`](https://github.com/purpom-media-lab/amplify-data-migration/commit/a0cf7216fa71b5d1b1a7aa2ed74151e1f08c8ccf) Thanks [@fossamagna](https://github.com/fossamagna)! - Bump @changesets/cli from 2.29.4 to 2.29.7
+
+- [#178](https://github.com/purpom-media-lab/amplify-data-migration/pull/178) [`a0cf721`](https://github.com/purpom-media-lab/amplify-data-migration/commit/a0cf7216fa71b5d1b1a7aa2ed74151e1f08c8ccf) Thanks [@fossamagna](https://github.com/fossamagna)! - Bump @smithy/node-config-provider from 4.1.2 to 4.2.0
+
+- [#178](https://github.com/purpom-media-lab/amplify-data-migration/pull/178) [`a0cf721`](https://github.com/purpom-media-lab/amplify-data-migration/commit/a0cf7216fa71b5d1b1a7aa2ed74151e1f08c8ccf) Thanks [@fossamagna](https://github.com/fossamagna)! - Bump @vitest/coverage-v8 from 3.1.4 to 3.2.4
+
+- [#178](https://github.com/purpom-media-lab/amplify-data-migration/pull/178) [`a0cf721`](https://github.com/purpom-media-lab/amplify-data-migration/commit/a0cf7216fa71b5d1b1a7aa2ed74151e1f08c8ccf) Thanks [@fossamagna](https://github.com/fossamagna)! - fix: some DynamoDB tables were not found during migration
+
+- [#178](https://github.com/purpom-media-lab/amplify-data-migration/pull/178) [`a0cf721`](https://github.com/purpom-media-lab/amplify-data-migration/commit/a0cf7216fa71b5d1b1a7aa2ed74151e1f08c8ccf) Thanks [@fossamagna](https://github.com/fossamagna)! - build: use pnpm instead of npm
+
 ## 1.2.3
 
 ### Patch Changes
