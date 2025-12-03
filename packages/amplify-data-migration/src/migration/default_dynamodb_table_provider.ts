@@ -5,7 +5,8 @@ import {
 } from "./types/dynamodb_table_provider.js";
 import {
   CloudFormationClient,
-  DescribeStackResourcesCommand,
+  ListStackResourcesCommand,
+  StackResourceSummary,
 } from "@aws-sdk/client-cloudformation";
 
 export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
@@ -35,7 +36,9 @@ export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
         `stack not found for appId: ${this.appId}, branch: ${this.branch}`
       );
     }
-    return this.collectDynamoDBTables(this.stackArnToStackName(stackArn));
+    const region = stackArn.split(":")[3];
+    const accountId = stackArn.split(":")[4];
+    return this.collectDynamoDBTables(region, accountId, this.stackArnToStackName(stackArn));
   }
 
   stackArnToStackName(stackArn: string): string {
@@ -43,15 +46,30 @@ export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
     return parts[1];
   }
 
+  private async listStackResources(
+    stackName: string
+  ): Promise<StackResourceSummary[]> {
+    const cloudformationClient = new CloudFormationClient();
+    let nextToken: string | undefined = undefined;
+    const summaries: StackResourceSummary[] = [];
+    do {
+      const output = await cloudformationClient.send(
+        new ListStackResourcesCommand({ StackName: stackName })
+      );
+      summaries.push(...(output.StackResourceSummaries ?? []));
+      nextToken = output.NextToken;
+    } while (nextToken);
+    return summaries;
+  }
   private async collectDynamoDBTables(
+    region: string,
+    accountId: string,
     stackName: string,
     tables: Record<string, AmplifyDynamoDBTable> = {}
   ): Promise<Record<string, AmplifyDynamoDBTable>> {
     const cloudformationClient = new CloudFormationClient();
-    const output = await cloudformationClient.send(
-      new DescribeStackResourcesCommand({ StackName: stackName })
-    );
-    const AmplifyDynamoDBTables = output.StackResources?.filter(
+    const stackResourceSummaries = await this.listStackResources(stackName);
+    const AmplifyDynamoDBTables = stackResourceSummaries?.filter(
       (resource) => resource.ResourceType === "Custom::AmplifyDynamoDBTable"
     );
     if (AmplifyDynamoDBTables) {
@@ -63,8 +81,6 @@ export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
           throw new Error(`LogicalResourceId not found for ${table}`);
         }
         const modelName = table.LogicalResourceId.replace(/Table$/, "");
-        const region = table.StackId?.split(":")[3];
-        const accountId = table.StackId?.split(":")[4];
         return {
           ...acc,
           [modelName]: {
@@ -75,7 +91,7 @@ export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
         };
       }, tables);
     }
-    const stacks = output.StackResources?.filter(
+    const stacks = stackResourceSummaries?.filter(
       (resource) => resource.ResourceType === "AWS::CloudFormation::Stack"
     );
     if (stacks) {
@@ -84,6 +100,8 @@ export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
           throw new Error(`PhysicalResourceId not found for ${stack}`);
         }
         const collectedTables = await this.collectDynamoDBTables(
+          region,
+          accountId,
           this.stackArnToStackName(stack.PhysicalResourceId),
           tables
         );
