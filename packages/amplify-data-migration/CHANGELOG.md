@@ -1,5 +1,13 @@
 # @purpom-media-lab/amplify-data-migration
 
+## 1.2.5
+
+### Patch Changes
+
+- [#161](https://github.com/purpom-media-lab/amplify-data-migration/pull/161) [`7014a00`](https://github.com/purpom-media-lab/amplify-data-migration/commit/7014a001daf9a5a85a8c7331d2db5d0b55dad516) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump aws-amplify from 6.15.5 to 6.15.7
+
+- [#185](https://github.com/purpom-media-lab/amplify-data-migration/pull/185) [`a4d5f20`](https://github.com/purpom-media-lab/amplify-data-migration/commit/a4d5f20b56766fb2274d27c7e2402c1be7f6fcc0) Thanks [@fossamagna](https://github.com/fossamagna)! - fix: collect DynamoDB tables from data stack
+
 ## 1.2.4
 
 ### Patch Changes
