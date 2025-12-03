@@ -8,9 +8,10 @@ on:
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 permissions:
-  contents: write
-  id-token: write # Required for OIDC
-  pull-requests: write
+  contents: write # to create release (changesets/action)
+  issues: write # to post issue comments (changesets/action)
+  pull-requests: write # to create pull request (changesets/action) required for OIDC
+  id-token: write # to use OpenID Connect token for provenance (changesets/action)
 
 jobs:
   release:
@@ -39,3 +40,4 @@ jobs:
           publish: pnpm release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_CONFIG_PROVENANCE: true
