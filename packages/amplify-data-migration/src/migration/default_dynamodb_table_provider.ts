@@ -39,10 +39,33 @@ export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
     }
     const region = stackArn.split(":")[3];
     const accountId = stackArn.split(":")[4];
+
+    const resouces = await this.listStackResources(
+      this.stackArnToStackName(stackArn)
+    );
+    const dataStackResource = resouces
+      .filter(
+        (resource) => resource.ResourceType === "AWS::CloudFormation::Stack"
+      )
+      .find((resource) => resource.LogicalResourceId && this.isDataStack(resource.LogicalResourceId));
+
+    if (!dataStackResource) {
+      throw new Error(
+        `data stack not found for appId: ${this.appId}, branch: ${this.branch}`
+      );
+    }
+
+    const dataStackArn = dataStackResource.PhysicalResourceId;
+    if (!dataStackArn) {
+      throw new Error(
+        `PhysicalResourceId not found for data stack in appId: ${this.appId}, branch: ${this.branch}`
+      );
+    }
+    
     return this.collectDynamoDBTables(
       region,
       accountId,
-      this.stackArnToStackName(stackArn)
+      this.stackArnToStackName(dataStackArn)
     );
   }
 
@@ -51,10 +74,16 @@ export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
     return parts[1];
   }
 
+  private isDataStack(stackName: string): boolean {
+    return /data[0-9A-F]{8}/.test(stackName);
+  }
+
   private async listStackResources(
     stackName: string
   ): Promise<StackResourceSummary[]> {
-    const cloudformationClient = new CloudFormationClient();
+    const cloudformationClient = new CloudFormationClient({
+      maxAttempts: 10,
+    });
     let nextToken: string | undefined = undefined;
     const summaries: StackResourceSummary[] = [];
     do {
@@ -75,7 +104,6 @@ export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
     stackName: string,
     tables: Record<string, AmplifyDynamoDBTable> = {}
   ): Promise<Record<string, AmplifyDynamoDBTable>> {
-    const cloudformationClient = new CloudFormationClient();
     const stackResourceSummaries = await this.listStackResources(stackName);
     const AmplifyDynamoDBTables = stackResourceSummaries?.filter(
       (resource) => resource.ResourceType === "Custom::AmplifyDynamoDBTable"
