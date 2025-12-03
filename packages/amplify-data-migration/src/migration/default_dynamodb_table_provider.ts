@@ -6,6 +6,7 @@ import {
 import {
   CloudFormationClient,
   ListStackResourcesCommand,
+  ListStackResourcesOutput,
   StackResourceSummary,
 } from "@aws-sdk/client-cloudformation";
 
@@ -38,7 +39,11 @@ export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
     }
     const region = stackArn.split(":")[3];
     const accountId = stackArn.split(":")[4];
-    return this.collectDynamoDBTables(region, accountId, this.stackArnToStackName(stackArn));
+    return this.collectDynamoDBTables(
+      region,
+      accountId,
+      this.stackArnToStackName(stackArn)
+    );
   }
 
   stackArnToStackName(stackArn: string): string {
@@ -53,8 +58,11 @@ export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
     let nextToken: string | undefined = undefined;
     const summaries: StackResourceSummary[] = [];
     do {
-      const output = await cloudformationClient.send(
-        new ListStackResourcesCommand({ StackName: stackName })
+      const output: ListStackResourcesOutput = await cloudformationClient.send(
+        new ListStackResourcesCommand({
+          StackName: stackName,
+          NextToken: nextToken,
+        })
       );
       summaries.push(...(output.StackResourceSummaries ?? []));
       nextToken = output.NextToken;
