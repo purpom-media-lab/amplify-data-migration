@@ -47,7 +47,7 @@ export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
       .filter(
         (resource) => resource.ResourceType === "AWS::CloudFormation::Stack"
       )
-      .find((resource) => this.isDataStack(resource.LogicalResourceId!));
+      .find((resource) => resource.LogicalResourceId && this.isDataStack(resource.LogicalResourceId));
 
     if (!dataStackResource) {
       throw new Error(
@@ -55,10 +55,17 @@ export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
       );
     }
 
+    const dataStackArn = dataStackResource.PhysicalResourceId;
+    if (!dataStackArn) {
+      throw new Error(
+        `PhysicalResourceId not found for data stack in appId: ${this.appId}, branch: ${this.branch}`
+      );
+    }
+    
     return this.collectDynamoDBTables(
       region,
       accountId,
-      this.stackArnToStackName(dataStackResource.PhysicalResourceId!)
+      this.stackArnToStackName(dataStackArn)
     );
   }
 
