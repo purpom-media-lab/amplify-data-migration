@@ -1,35 +1,5 @@
 # @purpom-media-lab/amplify-data-migration
 
-## 1.2.4
-
-### Patch Changes
-
-- [#151](https://github.com/purpom-media-lab/amplify-data-migration/pull/151) [`49ba646`](https://github.com/purpom-media-lab/amplify-data-migration/commit/49ba646078859ba804ace3ec6b32f20aaae1e957) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump @aws-amplify/cli-core from 1.1.2 to 1.4.1
-
-- [#131](https://github.com/purpom-media-lab/amplify-data-migration/pull/131) [`20c3b6a`](https://github.com/purpom-media-lab/amplify-data-migration/commit/20c3b6a5e0ff49e0cdc712d977c924b9224d58e6) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump @aws-sdk/client-amplify from 3.817.0 to 3.821.0
-
-- [#131](https://github.com/purpom-media-lab/amplify-data-migration/pull/131) [`20c3b6a`](https://github.com/purpom-media-lab/amplify-data-migration/commit/20c3b6a5e0ff49e0cdc712d977c924b9224d58e6) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump @aws-sdk/client-cloudformation from 3.817.0 to 3.821.0
-
-- [#131](https://github.com/purpom-media-lab/amplify-data-migration/pull/131) [`20c3b6a`](https://github.com/purpom-media-lab/amplify-data-migration/commit/20c3b6a5e0ff49e0cdc712d977c924b9224d58e6) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump @aws-sdk/client-dynamodb from 3.817.0 to 3.821.0
-
-- [#131](https://github.com/purpom-media-lab/amplify-data-migration/pull/131) [`20c3b6a`](https://github.com/purpom-media-lab/amplify-data-migration/commit/20c3b6a5e0ff49e0cdc712d977c924b9224d58e6) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump @aws-sdk/client-s3 from 3.817.0 to 3.821.0
-
-- [#131](https://github.com/purpom-media-lab/amplify-data-migration/pull/131) [`20c3b6a`](https://github.com/purpom-media-lab/amplify-data-migration/commit/20c3b6a5e0ff49e0cdc712d977c924b9224d58e6) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump @aws-sdk/credential-providers from 3.817.0 to 3.821.0
-
-- [#131](https://github.com/purpom-media-lab/amplify-data-migration/pull/131) [`20c3b6a`](https://github.com/purpom-media-lab/amplify-data-migration/commit/20c3b6a5e0ff49e0cdc712d977c924b9224d58e6) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump @aws-sdk/lib-dynamodb from 3.817.0 to 3.821.0
-
-- [#131](https://github.com/purpom-media-lab/amplify-data-migration/pull/131) [`20c3b6a`](https://github.com/purpom-media-lab/amplify-data-migration/commit/20c3b6a5e0ff49e0cdc712d977c924b9224d58e6) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump @aws-sdk/util-dynamodb from 3.817.0 to 3.821.0
-
-- [#150](https://github.com/purpom-media-lab/amplify-data-migration/pull/150) [`843a938`](https://github.com/purpom-media-lab/amplify-data-migration/commit/843a938c7faacfc8e4df538a1c2e7bceb4b3f5af) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump @changesets/cli from 2.29.4 to 2.29.7
-
-- [#148](https://github.com/purpom-media-lab/amplify-data-migration/pull/148) [`eb96aad`](https://github.com/purpom-media-lab/amplify-data-migration/commit/eb96aada7b937223971485d1fa16aba97a4d11f8) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump @smithy/node-config-provider from 4.1.2 to 4.2.0
-
-- [#137](https://github.com/purpom-media-lab/amplify-data-migration/pull/137) [`c7dea4c`](https://github.com/purpom-media-lab/amplify-data-migration/commit/c7dea4c443610f3019f9121930f3cd7d4dfd69dc) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump @vitest/coverage-v8 from 3.1.4 to 3.2.4
-
-- [#173](https://github.com/purpom-media-lab/amplify-data-migration/pull/173) [`5cc5382`](https://github.com/purpom-media-lab/amplify-data-migration/commit/5cc5382e0a84997b82a6e5dc520fe663071ad094) Thanks [@fossamagna](https://github.com/fossamagna)! - fix: some DynamoDB tables were not found during migration
-
-- [#128](https://github.com/purpom-media-lab/amplify-data-migration/pull/128) [`183d5ac`](https://github.com/purpom-media-lab/amplify-data-migration/commit/183d5acb2f515e1a11b03b9fd44f632031761d2f) Thanks [@fossamagna](https://github.com/fossamagna)! - build: use pnpm instead of npm
-
 ## 1.2.3
 
 ### Patch Changes
