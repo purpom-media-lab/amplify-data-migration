@@ -55,6 +55,6 @@
     "@aws-sdk/util-dynamodb": "^3.645.0",
     "@changesets/cli": "^2.27.8",
     "@smithy/node-config-provider": "^4.0.1",
-    "yargs": "^17.7.2"
+    "yargs": "^18.0.0"
   }
 }
