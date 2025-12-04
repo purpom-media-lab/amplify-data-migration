@@ -14,6 +14,100 @@
 npm install -D @purpom-media-lab/amplify-data-migration
 ```
 
+## 必要な IAM パーミッション
+
+このツールを使用するには、以下の AWS IAM パーミッションが必要です：
+
+### コアパーミッション
+
+#### DynamoDB（マイグレーション管理とデータ操作）
+- `dynamodb:CreateTable` - マイグレーションテーブルの作成
+- `dynamodb:DeleteTable` - マイグレーションテーブルの削除
+- `dynamodb:PutItem` - マイグレーション実行記録の保存
+- `dynamodb:Query` - 実行済みマイグレーションの取得
+- `dynamodb:Scan` - モデルデータのスキャン
+- `dynamodb:BatchWriteItem` - 一括データ書き込み
+- `dynamodb:ExportTableToPointInTime` - Point-in-Time Recovery エクスポートの実行
+- `dynamodb:DescribeExport` - エクスポート状態の確認
+
+#### S3（エクスポートデータの保存）
+- `s3:CreateBucket` - エクスポート用バケットの作成
+- `s3:DeleteBucket` - バケットの削除
+- `s3:GetObject` - エクスポートデータの読み取り
+- `s3:PutObject` - エクスポートデータの書き込み（DynamoDB エクスポート経由）
+- `s3:ListBucket` - バケット内オブジェクトの一覧取得
+
+#### AWS Amplify（アプリケーション情報の取得）
+- `amplify:GetBranch` - ブランチ情報とバックエンドスタック情報の取得
+
+#### CloudFormation（DynamoDB テーブル情報の取得）
+- `cloudformation:ListStackResources` - スタックリソースの一覧取得
+- `cloudformation:DescribeStacks` - スタック情報の取得
+
+### IAM ポリシーの例
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DynamoDBPermissions",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:CreateTable",
+        "dynamodb:DeleteTable",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ExportTableToPointInTime",
+        "dynamodb:DescribeExport"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:*:*:table/amplify-data-migration-*",
+        "arn:aws:dynamodb:*:*:table/*-*-*"
+      ]
+    },
+    {
+      "Sid": "S3Permissions",
+      "Effect": "Allow",
+      "Action": [
+        "s3:CreateBucket",
+        "s3:DeleteBucket",
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::amplify-export-*",
+        "arn:aws:s3:::amplify-export-*/*"
+      ]
+    },
+    {
+      "Sid": "AmplifyPermissions",
+      "Effect": "Allow",
+      "Action": [
+        "amplify:GetBranch"
+      ],
+      "Resource": "arn:aws:amplify:*:*:apps/*"
+    },
+    {
+      "Sid": "CloudFormationPermissions",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:ListStackResources",
+        "cloudformation:DescribeStacks"
+      ],
+      "Resource": "arn:aws:cloudformation:*:*:stack/*/*"
+    }
+  ]
+}
+```
+
+**注意事項：**
+- `Resource` の値は実際の環境に合わせて調整してください
+- 最小権限の原則に従い、必要なリソースのみにアクセスを制限することを推奨します
+
 ## Usage
 
 ### Initialize

@@ -14,6 +14,100 @@
 npm install -D @purpom-media-lab/amplify-data-migration
 ```
 
+## Required IAM Permissions
+
+To use this tool, you need the following AWS IAM permissions:
+
+### Core Permissions
+
+#### DynamoDB (Migration Management and Data Operations)
+- `dynamodb:CreateTable` - Create migration table
+- `dynamodb:DeleteTable` - Delete migration table
+- `dynamodb:PutItem` - Save migration execution records
+- `dynamodb:Query` - Retrieve executed migrations
+- `dynamodb:Scan` - Scan model data
+- `dynamodb:BatchWriteItem` - Batch write data
+- `dynamodb:ExportTableToPointInTime` - Execute Point-in-Time Recovery export
+- `dynamodb:DescribeExport` - Check export status
+
+#### S3 (Export Data Storage)
+- `s3:CreateBucket` - Create export bucket
+- `s3:DeleteBucket` - Delete bucket
+- `s3:GetObject` - Read export data
+- `s3:PutObject` - Write export data (via DynamoDB export)
+- `s3:ListBucket` - List objects in bucket
+
+#### AWS Amplify (Application Information)
+- `amplify:GetBranch` - Get branch and backend stack information
+
+#### CloudFormation (DynamoDB Table Information)
+- `cloudformation:ListStackResources` - List stack resources
+- `cloudformation:DescribeStacks` - Get stack information
+
+### IAM Policy Example
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "DynamoDBPermissions",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:CreateTable",
+        "dynamodb:DeleteTable",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ExportTableToPointInTime",
+        "dynamodb:DescribeExport"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:*:*:table/amplify-data-migration-*",
+        "arn:aws:dynamodb:*:*:table/*-*-*"
+      ]
+    },
+    {
+      "Sid": "S3Permissions",
+      "Effect": "Allow",
+      "Action": [
+        "s3:CreateBucket",
+        "s3:DeleteBucket",
+        "s3:GetObject",
+        "s3:PutObject",
+        "s3:ListBucket"
+      ],
+      "Resource": [
+        "arn:aws:s3:::amplify-export-*",
+        "arn:aws:s3:::amplify-export-*/*"
+      ]
+    },
+    {
+      "Sid": "AmplifyPermissions",
+      "Effect": "Allow",
+      "Action": [
+        "amplify:GetBranch"
+      ],
+      "Resource": "arn:aws:amplify:*:*:apps/*"
+    },
+    {
+      "Sid": "CloudFormationPermissions",
+      "Effect": "Allow",
+      "Action": [
+        "cloudformation:ListStackResources",
+        "cloudformation:DescribeStacks"
+      ],
+      "Resource": "arn:aws:cloudformation:*:*:stack/*/*"
+    }
+  ]
+}
+```
+
+**Note:** 
+- Adjust the `Resource` values according to your actual environment
+- Follow the principle of least privilege by restricting access to only necessary resources
+
 ## Usage
 
 ### Initialize
