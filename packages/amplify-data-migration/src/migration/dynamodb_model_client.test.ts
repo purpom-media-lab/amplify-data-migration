@@ -103,6 +103,140 @@ describe("DynamoDBModelClient", () => {
       expect(output.Items).toContainEqual({ id: "2", title: "TITLE_2" });
       expect(output.Items).toContainEqual({ id: "3", title: "TITLE_3" });
     });
+
+    test("does not throw error when no records are found", async (context) => {
+      type Todo = { id: string; title: string };
+      const transformer: ModelTransformer<Todo, Todo> = async (oldModel) => {
+        return { ...oldModel, title: oldModel.title.toUpperCase() };
+      };
+
+      // Filter that matches no records
+      await expect(
+        modelClient.updateModel("Todo", transformer, {
+          filter: {
+            expression: "id = :id",
+            attributeValues: { ":id": "non-existent-id" },
+          },
+        })
+      ).resolves.not.toThrow();
+
+      // Verify no records were updated
+      const todoTableName = `TodoTable${context.task.id}`;
+      const output = await dynamoDBDocumentClient.send(
+        new ScanCommand({ TableName: todoTableName })
+      );
+      expect(output.Count).toBe(3);
+      expect(output.Items).toContainEqual({ id: "1", title: "title_1" });
+      expect(output.Items).toContainEqual({ id: "2", title: "title_2" });
+      expect(output.Items).toContainEqual({ id: "3", title: "title_3" });
+    });
+
+    test("ignores records when transformer returns null without throwing error", async (context) => {
+      type Todo = { id: string; title: string };
+      const transformer: ModelTransformer<Todo, Todo> = async (oldModel) => {
+        // Return null for all records
+        return null;
+      };
+
+      await expect(
+        modelClient.updateModel("Todo", transformer)
+      ).resolves.not.toThrow();
+
+      // Verify no records were updated (all remained unchanged)
+      const todoTableName = `TodoTable${context.task.id}`;
+      const output = await dynamoDBDocumentClient.send(
+        new ScanCommand({ TableName: todoTableName })
+      );
+      expect(output.Count).toBe(3);
+      expect(output.Items).toContainEqual({ id: "1", title: "title_1" });
+      expect(output.Items).toContainEqual({ id: "2", title: "title_2" });
+      expect(output.Items).toContainEqual({ id: "3", title: "title_3" });
+    });
+
+    test("ignores specific records when transformer returns null for some records", async (context) => {
+      type Todo = { id: string; title: string };
+      const transformer: ModelTransformer<Todo, Todo> = async (oldModel) => {
+        // Only update records with id "2", ignore others
+        if (oldModel.id === "2") {
+          return { ...oldModel, title: oldModel.title.toUpperCase() };
+        }
+        return null;
+      };
+
+      await modelClient.updateModel("Todo", transformer);
+
+      // Verify only id "2" was updated
+      const todoTableName = `TodoTable${context.task.id}`;
+      const output = await dynamoDBDocumentClient.send(
+        new ScanCommand({ TableName: todoTableName })
+      );
+      expect(output.Count).toBe(3);
+      expect(output.Items).toContainEqual({ id: "1", title: "title_1" });
+      expect(output.Items).toContainEqual({ id: "2", title: "TITLE_2" });
+      expect(output.Items).toContainEqual({ id: "3", title: "title_3" });
+    });
+
+    test("passes only filtered records to transformer when filter is specified", async (context) => {
+      type Todo = { id: string; title: string };
+      const receivedIds: string[] = [];
+      
+      const transformer: ModelTransformer<Todo, Todo> = async (oldModel) => {
+        receivedIds.push(oldModel.id);
+        return { ...oldModel, title: oldModel.title.toUpperCase() };
+      };
+
+      // Filter to only process records with id "2"
+      await modelClient.updateModel("Todo", transformer, {
+        filter: {
+          expression: "id = :id",
+          attributeValues: { ":id": "2" },
+        },
+      });
+
+      // Verify transformer only received id "2"
+      expect(receivedIds).toEqual(["2"]);
+
+      // Verify only id "2" was updated in the database
+      const todoTableName = `TodoTable${context.task.id}`;
+      const output = await dynamoDBDocumentClient.send(
+        new ScanCommand({ TableName: todoTableName })
+      );
+      expect(output.Count).toBe(3);
+      expect(output.Items).toContainEqual({ id: "1", title: "title_1" });
+      expect(output.Items).toContainEqual({ id: "2", title: "TITLE_2" });
+      expect(output.Items).toContainEqual({ id: "3", title: "title_3" });
+    });
+
+    test("passes only filtered records to transformer with multiple matching records", async (context) => {
+      type Todo = { id: string; title: string };
+      const receivedIds: string[] = [];
+      
+      const transformer: ModelTransformer<Todo, Todo> = async (oldModel) => {
+        receivedIds.push(oldModel.id);
+        return { ...oldModel, title: oldModel.title.toUpperCase() };
+      };
+
+      // Filter to process records with id "1" or "3"
+      await modelClient.updateModel("Todo", transformer, {
+        filter: {
+          expression: "id IN (:id1, :id3)",
+          attributeValues: { ":id1": "1", ":id3": "3" },
+        },
+      });
+
+      // Verify transformer only received ids "1" and "3"
+      expect(receivedIds.sort()).toEqual(["1", "3"]);
+
+      // Verify only ids "1" and "3" were updated in the database
+      const todoTableName = `TodoTable${context.task.id}`;
+      const output = await dynamoDBDocumentClient.send(
+        new ScanCommand({ TableName: todoTableName })
+      );
+      expect(output.Count).toBe(3);
+      expect(output.Items).toContainEqual({ id: "1", title: "TITLE_1" });
+      expect(output.Items).toContainEqual({ id: "2", title: "title_2" });
+      expect(output.Items).toContainEqual({ id: "3", title: "TITLE_3" });
+    });
   });
 
   describe("runImport", () => {

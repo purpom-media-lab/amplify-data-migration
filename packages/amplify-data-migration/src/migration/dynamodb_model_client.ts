@@ -4,6 +4,7 @@ import {
   BatchWriteCommand,
   BatchWriteCommandInput,
   DynamoDBDocumentClient,
+  NativeAttributeValue,
 } from "@aws-sdk/lib-dynamodb";
 import type {
   ModelClient,
@@ -118,7 +119,7 @@ export class DynamoDBModelClient implements ModelClient {
     options?: {
       filter?: {
         expression: string;
-        attributeValues?: Record<string, AttributeValue>;
+        attributeValues?: Record<string, NativeAttributeValue>;
         attributeNames?: Record<string, string>;
       };
     }
@@ -135,18 +136,27 @@ export class DynamoDBModelClient implements ModelClient {
       },
       {
         TableName: tableName,
+        ...(options?.filter ? {
+          FilterExpression: options.filter.expression,
+          ExpressionAttributeValues: options.filter.attributeValues,
+          ExpressionAttributeNames: options.filter.attributeNames,
+        } : {})
       }
     );
     for await (const page of paginator) {
-      if (!page.Items) {
+      if (!page.Items || page.Items.length === 0) {
         continue;
       }
       const items = await Promise.all(
         page.Items.map((item) => transformer(item))
       );
+      const filteredItems = items.filter((item) => item !== null);
+      if (filteredItems.length === 0) {
+        continue;
+      }
       const input: BatchWriteCommandInput = this.toBatchWriteItemInput(
         tableName,
-        items
+        filteredItems
       );
       await this.dynamoDBDocumentClient.send(new BatchWriteCommand(input));
     }

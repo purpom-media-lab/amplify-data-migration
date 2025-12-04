@@ -7,7 +7,7 @@ import type { DynamoDBExportKey } from "./dynamodb_export_key.js";
  *
  * @typeParam OldModel - The type of the old model
  * @typeParam NewModel - The type of the new model
- * @returns The new model or null. If null is returned, the record will be deleted.
+ * @returns The new model or null. If null is returned, it is ignored.
  */
 export interface ModelTransformer<
   OldModel extends {} = {},
