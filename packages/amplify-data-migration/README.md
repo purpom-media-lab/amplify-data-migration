@@ -29,6 +29,7 @@ To use this tool, you need the following AWS IAM permissions:
 - `dynamodb:BatchWriteItem` - Batch write data
 - `dynamodb:ExportTableToPointInTime` - Execute Point-in-Time Recovery export
 - `dynamodb:DescribeExport` - Check export status
+- `dynamodb:DescribeContinuousBackups` - Check Point-in-Time Recovery status
 
 #### S3 (Export Data Storage)
 - `s3:CreateBucket` - Create export bucket
@@ -61,7 +62,8 @@ To use this tool, you need the following AWS IAM permissions:
         "dynamodb:Scan",
         "dynamodb:BatchWriteItem",
         "dynamodb:ExportTableToPointInTime",
-        "dynamodb:DescribeExport"
+        "dynamodb:DescribeExport",
+        "dynamodb:DescribeContinuousBackups"
       ],
       "Resource": [
         "arn:aws:dynamodb:*:*:table/amplify-data-migration-*",

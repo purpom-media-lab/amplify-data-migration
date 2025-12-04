@@ -29,6 +29,7 @@ npm install -D @purpom-media-lab/amplify-data-migration
 - `dynamodb:BatchWriteItem` - 一括データ書き込み
 - `dynamodb:ExportTableToPointInTime` - Point-in-Time Recovery エクスポートの実行
 - `dynamodb:DescribeExport` - エクスポート状態の確認
+- `dynamodb:DescribeContinuousBackups` - Point-in-Time Recovery 状態の確認
 
 #### S3（エクスポートデータの保存）
 - `s3:CreateBucket` - エクスポート用バケットの作成
@@ -61,7 +62,8 @@ npm install -D @purpom-media-lab/amplify-data-migration
         "dynamodb:Scan",
         "dynamodb:BatchWriteItem",
         "dynamodb:ExportTableToPointInTime",
-        "dynamodb:DescribeExport"
+        "dynamodb:DescribeExport",
+        "dynamodb:DescribeContinuousBackups"
       ],
       "Resource": [
         "arn:aws:dynamodb:*:*:table/amplify-data-migration-*",
