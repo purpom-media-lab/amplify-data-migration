@@ -1,6 +1,6 @@
 {
   "name": "@purpom-media-lab/amplify-data-migration",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Amplify Data Migration Tool",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",

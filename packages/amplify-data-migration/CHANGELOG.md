@@ -1,5 +1,13 @@
 # @purpom-media-lab/amplify-data-migration
 
+## 1.2.6
+
+### Patch Changes
+
+- [#187](https://github.com/purpom-media-lab/amplify-data-migration/pull/187) [`9032d82`](https://github.com/purpom-media-lab/amplify-data-migration/commit/9032d829647b603d3f9f7618e188da1e8e2f1fee) Thanks [@fossamagna](https://github.com/fossamagna)! - docs: add IAM permissions section to README
+
+- [#189](https://github.com/purpom-media-lab/amplify-data-migration/pull/189) [`da887b4`](https://github.com/purpom-media-lab/amplify-data-migration/commit/da887b442c1ccee758b40a53da1cf3e6d06bbaf7) Thanks [@fossamagna](https://github.com/fossamagna)! - fix: updateModel does not throw error when no records are found
+
 ## 1.2.5
 
 ### Patch Changes
