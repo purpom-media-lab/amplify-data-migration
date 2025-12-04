@@ -4,6 +4,7 @@ import {
   BatchWriteCommand,
   BatchWriteCommandInput,
   DynamoDBDocumentClient,
+  NativeAttributeValue,
 } from "@aws-sdk/lib-dynamodb";
 import type {
   ModelClient,
@@ -118,7 +119,7 @@ export class DynamoDBModelClient implements ModelClient {
     options?: {
       filter?: {
         expression: string;
-        attributeValues?: Record<string, AttributeValue>;
+        attributeValues?: Record<string, NativeAttributeValue>;
         attributeNames?: Record<string, string>;
       };
     }
