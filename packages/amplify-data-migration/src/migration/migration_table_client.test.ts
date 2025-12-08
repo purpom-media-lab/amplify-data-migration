@@ -19,6 +19,7 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import { MigrationTableClient } from "./migration_table_client.js";
 import { waitUntilActive, waitUntilDeleted } from "../test/dynamodb.js";
+import { createBranchBackendIdentifier } from "../types/environment_identifier.js";
 
 describe("MigrationTableClient", () => {
   let dynamoDBClient: DynamoDBClient;
@@ -39,8 +40,7 @@ describe("MigrationTableClient", () => {
   beforeEach(async (context) => {
     dynamoDBDocumentClient = DynamoDBDocumentClient.from(dynamoDBClient);
     migrationTableClient = new MigrationTableClient(
-      "appId",
-      context.task.id,
+      createBranchBackendIdentifier("appId", context.task.id),
       dynamoDBClient
     );
   });

@@ -26,6 +26,22 @@ npm install -D @purpom-media-lab/amplify-data-migration
 data-migration init --appId '<appId>' --branch '<branch name>' --profile '<profile name>'
 ```
 
+#### Amplify Gen2 サンドボックス環境での利用
+
+Amplify Gen2 のサンドボックス環境を使用する場合、`--appId` と `--branch` を指定する代わりに `sandbox` サブコマンドを使用できます。
+
+```sh
+data-migration sandbox init --profile '<profile name>'
+```
+
+`sandbox` サブコマンドを使用すると、ローカル環境からサンドボックス識別子を自動的に検出し、それを使用してマイグレーションリソースを初期化します。
+
+サンドボックス識別子を明示的に指定することもできます:
+
+```sh
+data-migration sandbox init --identifier '<sandbox-identifier>' --profile '<profile name>'
+```
+
 ### Create Migration File
 
 以下のように、マイグレーションの名前を指定してマイグレーションファイルの雛形を作成できます。
@@ -174,6 +190,12 @@ export default class AddProfileModel_1725285846601 implements Migration {
 data-migration migrate --appId '<appId>' --branch '<branch name>' --migrationsDir ./dist/migrations/ --profile '<profile name>'
 ```
 
+サンドボックス環境の場合:
+
+```sh
+data-migration sandbox migrate --migrationsDir ./dist/migrations/ --profile '<profile name>'
+```
+
 ### Migrate from export data with Point-in-Time Recovery
 
 以下のように`Book`モデルが存在したとします。
@@ -251,18 +273,29 @@ export default class ChangeBookKey_1725285846600 implements Migration {
 
 以下のように`data-migration export`コマンドを実行すると、`amplify-data-migration`は実行されていないマイグレーションの export を実行します。
 通常、このコマンドは`npx ampx pipeline-deploy`でデプロイを実行する前に呼び出すことを想定しています。
-`
 
 ```sh
 data-migration export --appId '<appId>' --branch '<branch name>' --profile '<profile name>'
+```
+
+サンドボックス環境の場合:
+
+```sh
+data-migration sandbox export --profile '<profile name>'
 ```
 
 ### Destroy
 
 Amplify Data Migration Tool の利用をやめる場合、以下のコマンドでマイグレーションテーブルと S3 バケットを破棄します。
 
-```ts
+```sh
 data-migration destroy --appId '<appId>' --branch '<branch name>' --profile '<profile name>'
+```
+
+サンドボックス環境の場合:
+
+```sh
+data-migration sandbox destroy --profile '<profile name>'
 ```
 
 ## Development

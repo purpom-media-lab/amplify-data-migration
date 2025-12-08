@@ -26,6 +26,22 @@ At the beginning (each app & branch), create a migration table and S3 bucket wit
 data-migration init --appId '<appId>' --branch '<branch name>' --profile '<profile name>'
 ```
 
+#### For Amplify Gen2 Sandbox Environment
+
+When using the Amplify Gen2 sandbox environment, you can use the `sandbox` subcommand instead of specifying `--appId` and `--branch`.
+
+```sh
+data-migration sandbox init --profile '<profile name>'
+```
+
+The `sandbox` subcommand automatically detects the sandbox identifier from your local environment and uses it to initialize the migration resources.
+
+You can also explicitly specify the sandbox identifier:
+
+```sh
+data-migration sandbox init --identifier '<sandbox-identifier>' --profile '<profile name>'
+```
+
 ### Create Migration File
 
 You can create a migration file template by specifying the name of the migration:
@@ -173,6 +189,12 @@ When you run the `data-migration migrate` command as shown below, `amplify-data-
 data-migration migrate --appId '<appId>' --branch '<branch name>' --migrationsDir ./dist/migrations/ --profile '<profile name>'
 ```
 
+For sandbox environment:
+
+```sh
+data-migration sandbox migrate --migrationsDir ./dist/migrations/ --profile '<profile name>'
+```
+
 ### Migrate from export data with Point-in-Time Recovery
 
 Suppose the `book` model exists as follows.
@@ -255,12 +277,24 @@ Usually, this command is assumed to be called before executing the deployment wi
 data-migration export --appId '<appId>' --branch '<branch name>' --profile '<profile name>'
 ```
 
+For sandbox environment:
+
+```sh
+data-migration sandbox export --profile '<profile name>'
+```
+
 ### Destroy
 
 If you no longer want to use the Amplify Data Migration Tool, run the following command to destroy the migration table and S3 bucket.
 
-```ts
+```sh
 data-migration destroy --appId '<appId>' --branch '<branch name>' --profile '<profile name>'
+```
+
+For sandbox environment:
+
+```sh
+data-migration sandbox destroy --profile '<profile name>'
 ```
 
 ## Development

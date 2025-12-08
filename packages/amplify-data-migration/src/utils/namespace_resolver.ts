@@ -1,0 +1,31 @@
+import { PackageJsonReader } from "@aws-amplify/platform-core";
+
+export type NamespaceResolver = {
+  resolve: () => Promise<string>;
+};
+
+/**
+ * Reads the local app name from package.json#name in the current directory.
+ * Compatible with @aws-amplify/backend-cli LocalNamespaceResolver.
+ */
+export class LocalNamespaceResolver implements NamespaceResolver {
+  /**
+   * packageJsonReader is assigned to an instance member for testing.
+   * resolve is bound to this so that it can be passed as a function reference
+   */
+  constructor(private readonly packageJsonReader: PackageJsonReader) {}
+
+  /**
+   * Returns the value of package.json#name from the current working directory
+   */
+  resolve = async () => {
+    const name = this.packageJsonReader.readFromCwd().name;
+    if (name) return name;
+    throw new Error(
+      `Unable to find "name" field in package.json in ${process.cwd()}.\n` +
+        `Ensure you are running this command from your project root directory ` +
+        `(i.e. in the parent of the 'amplify' directory).\n` +
+        `Also ensure that your root package.json file has a "name" field.`
+    );
+  };
+}

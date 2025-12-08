@@ -1,12 +1,8 @@
 import type { ArgumentsCamelCase, Argv, CommandModule } from "yargs";
 import { printer } from "../../printer.js";
 import { CommandMiddleware } from "../../command_middleware.js";
-import { MigrationTableClient } from "../../migration/migration_table_client.js";
-import { MigrationRunner } from "../../migration/migration_runner.js";
-import { DefaultDynamoDBTableProvider } from "../../migration/default_dynamodb_table_provider.js";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { S3Client } from "@aws-sdk/client-s3";
-import { S3ExportClient } from "../../export/s3_export_client.js";
+import { BackendIdentifierFactory } from "../../utils/backend_identifier_factory.js";
+import { handler } from "./handler.js";
 
 type MigrateCommandOptionsCamelCase = {
   branch: string;
@@ -44,27 +40,8 @@ export class MigrateCommand
    */
   async handler(args: ArgumentsCamelCase<MigrateCommandOptionsCamelCase>) {
     const { branch, appId, migrationsDir } = args;
-    const dynamoDBClient = new DynamoDBClient();
-    const s3Client = new S3Client();
-    const migrationTableClient = new MigrationTableClient(appId, branch);
-    const dynamoDBTableProvider = new DefaultDynamoDBTableProvider({
-      appId,
-      branch,
-    });
-    const s3ExportClient = new S3ExportClient({
-      appId,
-      branch,
-      s3Client,
-    });
-    const migrationRunner = new MigrationRunner({
-      migrationsDir,
-      dynamoDBClient,
-      s3Bucket: s3ExportClient.generateBucketName(),
-      s3Client,
-      migrationTableClient,
-      dynamoDBTableProvider,
-    });
-    await migrationRunner.run();
+    const backendIdentifier = await BackendIdentifierFactory.create({ branch, appId });
+    await handler(backendIdentifier, migrationsDir);
   }
 
   /**
@@ -74,16 +51,16 @@ export class MigrateCommand
     return yargs
       .version(false)
       .option("branch", {
-        describe: "Name of the git branch being initialized",
-        demandOption: true,
+        describe: "Name of the git branch",
         type: "string",
         array: false,
+        demandOption: true,
       })
       .option("appId", {
-        describe: "The app id of the target Amplify app",
-        demandOption: true,
+        describe: "The app id of the target Amplify app (required for --branch)",
         type: "string",
         array: false,
+        demandOption: true,
       })
       .option("migrationsDir", {
         describe: "Path to migration files directory",

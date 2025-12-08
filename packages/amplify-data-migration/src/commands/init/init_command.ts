@@ -1,9 +1,8 @@
 import type { ArgumentsCamelCase, Argv, CommandModule } from "yargs";
 import { printer } from "../../printer.js";
 import { CommandMiddleware } from "../../command_middleware.js";
-import { MigrationTableClient } from "../../migration/migration_table_client.js";
-import { S3Client } from "@aws-sdk/client-s3";
-import { S3ExportClient } from "../../export/s3_export_client.js";
+import { BackendIdentifierFactory } from "../../utils/backend_identifier_factory.js";
+import { handler } from "./handler.js";
 
 type InitCommandOptionsCamelCase = {
   branch: string;
@@ -40,19 +39,9 @@ export class InitCommand
    */
   async handler(args: ArgumentsCamelCase<InitCommandOptionsCamelCase>) {
     const { branch, appId } = args;
-    const s3Client = new S3Client();
-    const migrationTableClient = new MigrationTableClient(appId, branch);
-    const s3ExportClient = new S3ExportClient({
-      appId,
-      branch,
-      s3Client,
-    });
-    const tableName = await migrationTableClient.createMigrationTable();
-    printer.log(
-      `Initialize migration table: ${tableName} for branch ${branch}`
-    );
-    const bucketName = await s3ExportClient.createBucket();
-    printer.log(`Initialize S3 bucket: ${bucketName} for branch ${branch}`);
+    
+    const backendIdentifier = await BackendIdentifierFactory.create({ branch, appId });
+    await handler(backendIdentifier);
   }
 
   /**
@@ -63,15 +52,15 @@ export class InitCommand
       .version(false)
       .option("branch", {
         describe: "Name of the git branch being initialized",
-        demandOption: true,
         type: "string",
         array: false,
+        demandOption: true,
       })
       .option("appId", {
-        describe: "The app id of the target Amplify app",
-        demandOption: true,
+        describe: "The app id of the target Amplify app (required for --branch)",
         type: "string",
         array: false,
+        demandOption: true,
       })
       .option("profile", {
         describe: "An AWS profile name.",

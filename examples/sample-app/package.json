@@ -17,18 +17,18 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@aws-amplify/backend": "^1.2.1",
-    "@aws-amplify/backend-cli": "^1.2.6",
-    "aws-cdk": "^2.158.0",
-    "aws-cdk-lib": "^2.158.0",
-    "constructs": "^10.3.0",
-    "esbuild": "^0.25.4",
-    "tsx": "^4.19.1",
-    "typescript": "^5.6.2"
+    "@aws-amplify/backend": "^1.18.0",
+    "@aws-amplify/backend-cli": "^1.8.0",
+    "aws-cdk": "^2.1033.0",
+    "aws-cdk-lib": "^2.232.0",
+    "constructs": "^10.4.3",
+    "esbuild": "^0.27.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity-provider": "^3.679.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.943.0",
     "@purpom-media-lab/amplify-data-migration": "workspace:*",
-    "aws-amplify": "^6.15.7"
+    "aws-amplify": "^6.15.8"
   }
 }

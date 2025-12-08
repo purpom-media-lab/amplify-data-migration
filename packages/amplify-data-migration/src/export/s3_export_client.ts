@@ -3,30 +3,30 @@ import {
   DeleteBucketCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
+import type { BackendIdentifier } from "../types/index.js";
+import { getResourceNameSuffix } from "../types/environment_identifier.js";
 
 export class S3ExportClient {
-  private readonly appId: string;
-  private readonly branch: string;
+  private readonly backendIdentifier: BackendIdentifier;
   private readonly s3Client: S3Client;
 
   constructor({
-    appId,
-    branch,
+    backendIdentifier,
     s3Client,
   }: {
-    appId: string;
-    branch: string;
+    backendIdentifier: BackendIdentifier;
     s3Client: S3Client;
   }) {
-    this.appId = appId;
-    this.branch = branch;
+    this.backendIdentifier = backendIdentifier;
     this.s3Client = s3Client;
   }
 
   generateBucketName() {
-    const branch = this.branch.replaceAll("_", "-").toLocaleLowerCase();
-    const appId = this.appId.replaceAll("_", "-").toLocaleLowerCase();
-    return `amplify-export-${appId}-${branch}`;
+    const suffix = getResourceNameSuffix(this.backendIdentifier);
+    const namespace = this.backendIdentifier.namespace
+      .replaceAll("_", "-")
+      .toLocaleLowerCase();
+    return `amplify-export-${namespace}-${suffix}`;
   }
 
   async createBucket(): Promise<string> {

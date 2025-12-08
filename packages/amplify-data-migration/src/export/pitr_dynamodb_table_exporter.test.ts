@@ -15,6 +15,7 @@ import { mockClient } from "aws-sdk-client-mock";
 import { PITRDynamoDBTableExporter } from "./pitr_dynamodb_table_exporter.js";
 import { S3ExportClient } from "./s3_export_client.js";
 import { S3Client } from "@aws-sdk/client-s3";
+import { createBranchBackendIdentifier } from "../types/environment_identifier.js";
 
 describe("PITRDynamoDBTableExporter", () => {
   let dynamoDBClient: DynamoDBClient;
@@ -36,8 +37,7 @@ describe("PITRDynamoDBTableExporter", () => {
     dynamoDBClient = new DynamoDBClient({});
     s3ExportClient = new S3ExportClient({
       s3Client,
-      appId: "appId",
-      branch: context.task.id,
+      backendIdentifier: createBranchBackendIdentifier("appId", context.task.id),
     });
     const bucketName = await s3ExportClient.createBucket();
     return async () => {

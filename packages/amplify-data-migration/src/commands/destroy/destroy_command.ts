@@ -1,9 +1,8 @@
 import type { ArgumentsCamelCase, Argv, CommandModule } from "yargs";
 import { printer } from "../../printer.js";
 import { CommandMiddleware } from "../../command_middleware.js";
-import { MigrationTableClient } from "../../migration/migration_table_client.js";
-import { S3ExportClient } from "../../export/s3_export_client.js";
-import { S3Client } from "@aws-sdk/client-s3";
+import { BackendIdentifierFactory } from "../../utils/backend_identifier_factory.js";
+import { handler } from "./handler.js";
 
 type DestroyCommandOptionsCamelCase = {
   branch: string;
@@ -39,18 +38,9 @@ export class DestroyCommand
    * @inheritDoc
    */
   async handler(args: ArgumentsCamelCase<DestroyCommandOptionsCamelCase>) {
-    const { branch, appId } = args;
-    const migrationTableClient = new MigrationTableClient(appId, branch);
-    const s3Client = new S3Client();
-    const s3ExportClient = new S3ExportClient({
-      appId,
-      branch,
-      s3Client,
-    });
-    const tableName = await migrationTableClient.destroyMigrationTable();
-    printer.log(`Destroyed migration table: ${tableName} for branch ${branch}`);
-    const bucketName = await s3ExportClient.destroyBucket();
-    printer.log(`Destroyed S3 bucket: ${bucketName} for branch ${branch}`);
+    const { branch, appId } = args;    
+    const backendIdentifier = await BackendIdentifierFactory.create({ branch, appId });
+    await handler(backendIdentifier);
   }
 
   /**
@@ -60,16 +50,16 @@ export class DestroyCommand
     return yargs
       .version(false)
       .option("branch", {
-        describe: "Name of the git branch being destoryed",
-        demandOption: true,
+        describe: "Name of the git branch being destroyed",
         type: "string",
         array: false,
+        demandOption: true,
       })
       .option("appId", {
-        describe: "The app id of the target Amplify app",
-        demandOption: true,
+        describe: "The app id of the target Amplify app (required for --branch)",
         type: "string",
         array: false,
+        demandOption: true,
       })
       .option("profile", {
         describe: "An AWS profile name.",
