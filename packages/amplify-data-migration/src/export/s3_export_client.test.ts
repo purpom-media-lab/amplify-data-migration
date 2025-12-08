@@ -12,6 +12,7 @@ import {
   HeadBucketCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
+import { createBranchBackendIdentifier } from "../types/environment_identifier.js";
 
 describe("S3ExportClient", () => {
   let s3Client: S3Client;
@@ -30,8 +31,7 @@ describe("S3ExportClient", () => {
   beforeEach(async (context) => {
     s3ExportClient = new S3ExportClient({
       s3Client,
-      appId: "appId",
-      branch: context.task.id,
+      backendIdentifier: createBranchBackendIdentifier("appId", context.task.id),
     });
   });
 

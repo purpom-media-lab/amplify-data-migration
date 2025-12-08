@@ -5,36 +5,77 @@ import {
 } from "./types/dynamodb_table_provider.js";
 import {
   CloudFormationClient,
+  DescribeStacksCommand,
   ListStackResourcesCommand,
   ListStackResourcesOutput,
   StackResourceSummary,
 } from "@aws-sdk/client-cloudformation";
+import type { BackendIdentifier } from "../types/index.js";
+import { BackendIdentifierConversions } from "@aws-amplify/platform-core";
 
 export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
-  readonly appId: string;
-  readonly branch: string;
-  constructor({ appId, branch }: { appId: string; branch: string }) {
-    this.appId = appId;
-    this.branch = branch;
+  private readonly backendIdentifier: BackendIdentifier;
+  private readonly cloudFormationClient: CloudFormationClient;
+  private readonly amplifyClient: AmplifyClient;
+
+  constructor({ backendIdentifier }: { backendIdentifier: BackendIdentifier }) {
+    this.backendIdentifier = backendIdentifier;
+    this.cloudFormationClient = new CloudFormationClient({
+      maxAttempts: 10,
+    });
+    this.amplifyClient = new AmplifyClient();
   }
   async getDynamoDBTables(): Promise<Record<string, AmplifyDynamoDBTable>> {
-    const amplifyClient = new AmplifyClient();
-    const output = await amplifyClient.send(
-      new GetBranchCommand({
-        appId: this.appId,
-        branchName: this.branch,
-      })
-    );
-    const backend = output.branch?.backend;
-    if (!backend) {
+    const amplifyClient = this.amplifyClient;
+
+    let stackArn: string | undefined;
+
+    if (this.backendIdentifier.type === "branch") {
+      // Get backend from branch
+      const output = await amplifyClient.send(
+        new GetBranchCommand({
+          appId: this.backendIdentifier.namespace,
+          branchName: this.backendIdentifier.name,
+        })
+      );
+      const backend = output.branch?.backend;
+      if (!backend) {
+        throw new Error(
+          `Backend not found for ${this.backendIdenntifierForMessage(
+            this.backendIdentifier
+          )}`
+        );
+      }
+      stackArn = backend.stackArn;
+    } else if (this.backendIdentifier.type === "sandbox") {
+      // Get backend from sandbox
+      const stackName = BackendIdentifierConversions.toStackName(
+        this.backendIdentifier
+      );
+      const cfnClient = this.cloudFormationClient;
+      const output = await cfnClient.send(
+        new DescribeStacksCommand({ StackName: stackName })
+      );
+      const stack = output.Stacks?.[0];
+      if (!stack) {
+        throw new Error(
+          `Stack not found for ${this.backendIdenntifierForMessage(
+            this.backendIdentifier
+          )}`
+        );
+      }
+      stackArn = stack?.StackId;
+    } else {
       throw new Error(
-        `Backend not found for appId: ${this.appId}, branch: ${this.branch}`
+        `Unsupported backend identifier type: ${this.backendIdentifier}`
       );
     }
-    const stackArn = backend.stackArn;
+
     if (!stackArn) {
       throw new Error(
-        `stack not found for appId: ${this.appId}, branch: ${this.branch}`
+        `stack not found for ${this.backendIdenntifierForMessage(
+          this.backendIdentifier
+        )}`
       );
     }
     const region = stackArn.split(":")[3];
@@ -47,26 +88,44 @@ export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
       .filter(
         (resource) => resource.ResourceType === "AWS::CloudFormation::Stack"
       )
-      .find((resource) => resource.LogicalResourceId && this.isDataStack(resource.LogicalResourceId));
+      .find(
+        (resource) =>
+          resource.LogicalResourceId &&
+          this.isDataStack(resource.LogicalResourceId)
+      );
 
     if (!dataStackResource) {
       throw new Error(
-        `data stack not found for appId: ${this.appId}, branch: ${this.branch}`
+        `data stack not found for ${this.backendIdenntifierForMessage(
+          this.backendIdentifier
+        )}`
       );
     }
 
     const dataStackArn = dataStackResource.PhysicalResourceId;
     if (!dataStackArn) {
       throw new Error(
-        `PhysicalResourceId not found for data stack in appId: ${this.appId}, branch: ${this.branch}`
+        `PhysicalResourceId not found for data stack in ${this.backendIdenntifierForMessage(
+          this.backendIdentifier
+        )}`
       );
     }
-    
+
     return this.collectDynamoDBTables(
       region,
       accountId,
       this.stackArnToStackName(dataStackArn)
     );
+  }
+
+  private backendIdenntifierForMessage(
+    backendIdentifier: BackendIdentifier
+  ): string {
+    if (backendIdentifier.type === "branch") {
+      return `appId: ${backendIdentifier.namespace}, branch: ${backendIdentifier.name}`;
+    } else {
+      return `namespace: ${backendIdentifier.namespace}, sandbox: ${backendIdentifier.name}`;
+    }
   }
 
   stackArnToStackName(stackArn: string): string {
@@ -81,9 +140,7 @@ export class DefaultDynamoDBTableProvider implements DynamoDBTableProvider {
   private async listStackResources(
     stackName: string
   ): Promise<StackResourceSummary[]> {
-    const cloudformationClient = new CloudFormationClient({
-      maxAttempts: 10,
-    });
+    const cloudformationClient = this.cloudFormationClient;
     let nextToken: string | undefined = undefined;
     const summaries: StackResourceSummary[] = [];
     do {

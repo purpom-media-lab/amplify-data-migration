@@ -4,10 +4,14 @@ import { CommandMiddleware } from "../../command_middleware.js";
 import { MigrationTableClient } from "../../migration/migration_table_client.js";
 import { S3ExportClient } from "../../export/s3_export_client.js";
 import { S3Client } from "@aws-sdk/client-s3";
+import { BackendIdentifierFactory } from "../../utils/backend_identifier_factory.js";
+import { userInfo } from "node:os";
+import { ResourceNotFoundException } from "@aws-sdk/client-dynamodb";
 
 type DestroyCommandOptionsCamelCase = {
-  branch: string;
-  appId: string;
+  branch?: string;
+  sandbox?: string;
+  appId?: string;
   profile?: string;
 };
 
@@ -39,18 +43,27 @@ export class DestroyCommand
    * @inheritDoc
    */
   async handler(args: ArgumentsCamelCase<DestroyCommandOptionsCamelCase>) {
-    const { branch, appId } = args;
-    const migrationTableClient = new MigrationTableClient(appId, branch);
+    const { branch, sandbox, appId } = args;    
+    const backendIdentifier = await BackendIdentifierFactory.create({ branch, sandbox, appId });
+    
+    const migrationTableClient = new MigrationTableClient(backendIdentifier);
     const s3Client = new S3Client();
     const s3ExportClient = new S3ExportClient({
-      appId,
-      branch,
+      backendIdentifier,
       s3Client,
     });
-    const tableName = await migrationTableClient.destroyMigrationTable();
-    printer.log(`Destroyed migration table: ${tableName} for branch ${branch}`);
+    try {
+      const tableName = await migrationTableClient.destroyMigrationTable();
+      printer.log(`Destroyed migration table: ${tableName} for ${backendIdentifier.type} ${backendIdentifier.name}`);
+    } catch (error) {
+      if (error instanceof ResourceNotFoundException) {
+        printer.log(`Migration table does not exist for ${backendIdentifier.type} ${backendIdentifier.name}`);
+      } else {
+        throw error;
+      }
+    }
     const bucketName = await s3ExportClient.destroyBucket();
-    printer.log(`Destroyed S3 bucket: ${bucketName} for branch ${branch}`);
+    printer.log(`Destroyed S3 bucket: ${bucketName} for ${backendIdentifier.type} ${backendIdentifier.name}`);
   }
 
   /**
@@ -60,14 +73,18 @@ export class DestroyCommand
     return yargs
       .version(false)
       .option("branch", {
-        describe: "Name of the git branch being destoryed",
-        demandOption: true,
+        describe: "Name of the git branch being destroyed",
         type: "string",
         array: false,
       })
+      .option("sandbox", {
+        describe: "Name of the sandbox environment (optional, defaults to current username)",
+        type: "string",
+        array: false,
+        default: userInfo().username,
+      })
       .option("appId", {
-        describe: "The app id of the target Amplify app",
-        demandOption: true,
+        describe: "The app id of the target Amplify app (required for --branch)",
         type: "string",
         array: false,
       })

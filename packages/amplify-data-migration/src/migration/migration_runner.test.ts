@@ -30,6 +30,7 @@ import {
 import { S3Client } from "@aws-sdk/client-s3";
 import { ExportContext } from "../types/context.js";
 import { ModelGenerator } from "../types/model_client.js";
+import { createBranchBackendIdentifier } from "../types/environment_identifier.js";
 
 describe("MigrationRunner", () => {
   let s3Client: S3Client;
@@ -54,8 +55,7 @@ describe("MigrationRunner", () => {
     const todoTableName = `TodoTable${context.task.id}`;
     dynamoDBDocumentClient = DynamoDBDocumentClient.from(dynamoDBClient);
     migrationTableClient = new MigrationTableClient(
-      "appId",
-      context.task.id,
+      createBranchBackendIdentifier("appId", context.task.id),
       dynamoDBClient
     );
     await createTodoTable(dynamoDBClient, todoTableName);

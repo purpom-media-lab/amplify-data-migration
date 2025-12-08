@@ -11,6 +11,7 @@ import {
 import { PITRDynamoDBExport } from "./pitr_dynamodb_table_export.js";
 import { S3ExportClient } from "./s3_export_client.js";
 import { clear, upload } from "../test/s3.js";
+import { createBranchBackendIdentifier } from "../types/environment_identifier.js";
 
 describe("PITRDynamoDBExport", () => {
   let s3Client: S3Client;
@@ -29,8 +30,7 @@ describe("PITRDynamoDBExport", () => {
   beforeEach(async (context) => {
     s3ExportClient = new S3ExportClient({
       s3Client,
-      appId: "appId",
-      branch: context.task.id,
+      backendIdentifier: createBranchBackendIdentifier("appId", context.task.id),
     });
     const bucketName = await s3ExportClient.createBucket();
     return async () => {

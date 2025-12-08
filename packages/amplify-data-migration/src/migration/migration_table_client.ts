@@ -8,6 +8,7 @@ import {
 import { marshall, unmarshall } from "@aws-sdk/util-dynamodb";
 import type { Migration } from "../types/migration.js";
 import type { DynamoDBExportKey } from "../types/dynamodb_export_key.js";
+import { BackendIdentifier, getResourceNameSuffix } from "../types/index.js";
 
 type MigrationRecord = {
   action: "run" | "export";
@@ -17,23 +18,25 @@ type MigrationRecord = {
 };
 
 export class MigrationTableClient {
-  private appId: string;
-  private branch: string;
+  private backendIdentifier: BackendIdentifier;
   private dynamoDBClient: DynamoDBClient;
 
-  constructor(appId: string, branch: string, dynamoDBClient?: DynamoDBClient) {
+  constructor(
+    backendIdentifier: BackendIdentifier,
+    dynamoDBClient?: DynamoDBClient
+  ) {
     this.dynamoDBClient = dynamoDBClient ?? new DynamoDBClient();
-    this.appId = appId;
-    this.branch = branch;
+    this.backendIdentifier = backendIdentifier;
   }
 
   /**
-   * Generates a migration table name based on the appId and branch.
+   * Generates a migration table name based on the backend identifier.
    * @returns The generated migration table name
    * @internal
    */
   generateTableName() {
-    return `amplify-data-migration-${this.appId}-${this.branch}`;
+    const suffix = getResourceNameSuffix(this.backendIdentifier);
+    return `amplify-data-migration-${this.backendIdentifier.namespace}-${suffix}`;
   }
 
   async createMigrationTable() {

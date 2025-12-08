@@ -7,10 +7,13 @@ import { DefaultDynamoDBTableProvider } from "../../migration/default_dynamodb_t
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { S3Client } from "@aws-sdk/client-s3";
 import { S3ExportClient } from "../../export/s3_export_client.js";
+import { BackendIdentifierFactory } from "../../utils/backend_identifier_factory.js";
+import { userInfo } from "node:os";
 
 type MigrateCommandOptionsCamelCase = {
-  branch: string;
-  appId: string;
+  branch?: string;
+  sandbox?: string;
+  appId?: string;
   migrationsDir: string;
   profile?: string;
 };
@@ -43,17 +46,18 @@ export class MigrateCommand
    * @inheritDoc
    */
   async handler(args: ArgumentsCamelCase<MigrateCommandOptionsCamelCase>) {
-    const { branch, appId, migrationsDir } = args;
+    const { branch, sandbox, appId, migrationsDir } = args;
+    
+    const backendIdentifier = await BackendIdentifierFactory.create({ branch, sandbox, appId });
+    
     const dynamoDBClient = new DynamoDBClient();
     const s3Client = new S3Client();
-    const migrationTableClient = new MigrationTableClient(appId, branch);
+    const migrationTableClient = new MigrationTableClient(backendIdentifier);
     const dynamoDBTableProvider = new DefaultDynamoDBTableProvider({
-      appId,
-      branch,
+      backendIdentifier,
     });
     const s3ExportClient = new S3ExportClient({
-      appId,
-      branch,
+      backendIdentifier,
       s3Client,
     });
     const migrationRunner = new MigrationRunner({
@@ -74,14 +78,18 @@ export class MigrateCommand
     return yargs
       .version(false)
       .option("branch", {
-        describe: "Name of the git branch being initialized",
-        demandOption: true,
+        describe: "Name of the git branch",
         type: "string",
         array: false,
       })
+      .option("sandbox", {
+        describe: "Name of the sandbox environment (optional, defaults to current username)",
+        type: "string",
+        array: false,
+        default: userInfo().username,
+      })
       .option("appId", {
-        describe: "The app id of the target Amplify app",
-        demandOption: true,
+        describe: "The app id of the target Amplify app (required for --branch)",
         type: "string",
         array: false,
       })
