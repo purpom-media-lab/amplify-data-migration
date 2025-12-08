@@ -28,18 +28,18 @@ data-migration init --appId '<appId>' --branch '<branch name>' --profile '<profi
 
 #### For Amplify Gen2 Sandbox Environment
 
-When using the Amplify Gen2 sandbox environment, you can use the `--sandbox` option instead of specifying `--appId` and `--branch`.
+When using the Amplify Gen2 sandbox environment, you can use the `sandbox` subcommand instead of specifying `--appId` and `--branch`.
 
 ```sh
-data-migration init --sandbox --profile '<profile name>'
+data-migration sandbox init --profile '<profile name>'
 ```
 
-The `--sandbox` option automatically detects the sandbox identifier from your local environment and uses it to initialize the migration resources.
+The `sandbox` subcommand automatically detects the sandbox identifier from your local environment and uses it to initialize the migration resources.
 
-You can also explicitly specify the sandbox identifier as a string:
+You can also explicitly specify the sandbox identifier:
 
 ```sh
-data-migration init --sandbox '<sandbox-identifier>' --profile '<profile name>'
+data-migration sandbox init --identifier '<sandbox-identifier>' --profile '<profile name>'
 ```
 
 ### Create Migration File
@@ -192,7 +192,7 @@ data-migration migrate --appId '<appId>' --branch '<branch name>' --migrationsDi
 For sandbox environment:
 
 ```sh
-data-migration migrate --sandbox --migrationsDir ./dist/migrations/ --profile '<profile name>'
+data-migration sandbox migrate --migrationsDir ./dist/migrations/ --profile '<profile name>'
 ```
 
 ### Migrate from export data with Point-in-Time Recovery
@@ -280,7 +280,7 @@ data-migration export --appId '<appId>' --branch '<branch name>' --profile '<pro
 For sandbox environment:
 
 ```sh
-data-migration export --sandbox --profile '<profile name>'
+data-migration sandbox export --profile '<profile name>'
 ```
 
 ### Destroy
@@ -294,7 +294,7 @@ data-migration destroy --appId '<appId>' --branch '<branch name>' --profile '<pr
 For sandbox environment:
 
 ```sh
-data-migration destroy --sandbox --profile '<profile name>'
+data-migration sandbox destroy --profile '<profile name>'
 ```
 
 ## Development

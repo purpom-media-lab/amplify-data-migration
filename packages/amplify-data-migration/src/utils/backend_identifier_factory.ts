@@ -2,11 +2,13 @@ import { PackageJsonReader } from "@aws-amplify/platform-core";
 import { createBranchBackendIdentifier, type BackendIdentifier } from "../types/environment_identifier.js";
 import { LocalNamespaceResolver } from "./namespace_resolver.js";
 import { SandboxIdentifierResolver } from "./sandbox_identifier_resolver.js";
+import { userInfo } from "os";
 
 export type BackendIdentifierOptions = {
-  branch?: string;
+  branch: string;
+  appId: string;
+} | {
   sandbox?: string;
-  appId?: string;
 };
 
 /**
@@ -20,25 +22,17 @@ export class BackendIdentifierFactory {
    * @throws Error if neither branch nor sandbox is specified, or if both are specified
    */
   static async create(options: BackendIdentifierOptions): Promise<BackendIdentifier> {
-    const { branch, sandbox, appId } = options;
-    
-    if (!branch && !sandbox) {
-      throw new Error("Either --branch or --sandbox must be specified");
-    }
-    if (branch && sandbox) {
-      throw new Error("Cannot specify both --branch and --sandbox");
-    }
-    
-    if (branch) {
+    if ("branch" in options) {
+      const { branch, appId } = options;
       if (!appId) {
         throw new Error("--appId is required when using --branch");
       }
       return createBranchBackendIdentifier(appId, branch);
     } else {
+      const { sandbox } = options;
       const namespaceResolver = new LocalNamespaceResolver(new PackageJsonReader());
       const sandboxResolver = new SandboxIdentifierResolver(namespaceResolver);
-      const sandboxName = typeof sandbox === 'string' ? sandbox : undefined;
-      return await sandboxResolver.resolve(sandboxName);
+      return await sandboxResolver.resolve(sandbox);
     }
   }
 }

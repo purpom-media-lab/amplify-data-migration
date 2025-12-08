@@ -1,19 +1,12 @@
 import type { ArgumentsCamelCase, Argv, CommandModule } from "yargs";
 import { printer } from "../../printer.js";
 import { CommandMiddleware } from "../../command_middleware.js";
-import { MigrationTableClient } from "../../migration/migration_table_client.js";
-import { MigrationRunner } from "../../migration/migration_runner.js";
-import { DefaultDynamoDBTableProvider } from "../../migration/default_dynamodb_table_provider.js";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { S3Client } from "@aws-sdk/client-s3";
-import { S3ExportClient } from "../../export/s3_export_client.js";
 import { BackendIdentifierFactory } from "../../utils/backend_identifier_factory.js";
-import { userInfo } from "node:os";
+import { handler } from "./handler.js";
 
 type MigrateCommandOptionsCamelCase = {
-  branch?: string;
-  sandbox?: string;
-  appId?: string;
+  branch: string;
+  appId: string;
   migrationsDir: string;
   profile?: string;
 };
@@ -46,29 +39,9 @@ export class MigrateCommand
    * @inheritDoc
    */
   async handler(args: ArgumentsCamelCase<MigrateCommandOptionsCamelCase>) {
-    const { branch, sandbox, appId, migrationsDir } = args;
-    
-    const backendIdentifier = await BackendIdentifierFactory.create({ branch, sandbox, appId });
-    
-    const dynamoDBClient = new DynamoDBClient();
-    const s3Client = new S3Client();
-    const migrationTableClient = new MigrationTableClient(backendIdentifier);
-    const dynamoDBTableProvider = new DefaultDynamoDBTableProvider({
-      backendIdentifier,
-    });
-    const s3ExportClient = new S3ExportClient({
-      backendIdentifier,
-      s3Client,
-    });
-    const migrationRunner = new MigrationRunner({
-      migrationsDir,
-      dynamoDBClient,
-      s3Bucket: s3ExportClient.generateBucketName(),
-      s3Client,
-      migrationTableClient,
-      dynamoDBTableProvider,
-    });
-    await migrationRunner.run();
+    const { branch, appId, migrationsDir } = args;
+    const backendIdentifier = await BackendIdentifierFactory.create({ branch, appId });
+    await handler(backendIdentifier, migrationsDir);
   }
 
   /**
@@ -81,17 +54,13 @@ export class MigrateCommand
         describe: "Name of the git branch",
         type: "string",
         array: false,
-      })
-      .option("sandbox", {
-        describe: "Name of the sandbox environment (optional, defaults to current username)",
-        type: "string",
-        array: false,
-        default: userInfo().username,
+        demandOption: true,
       })
       .option("appId", {
         describe: "The app id of the target Amplify app (required for --branch)",
         type: "string",
         array: false,
+        demandOption: true,
       })
       .option("migrationsDir", {
         describe: "Path to migration files directory",

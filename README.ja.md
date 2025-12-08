@@ -28,18 +28,18 @@ data-migration init --appId '<appId>' --branch '<branch name>' --profile '<profi
 
 #### Amplify Gen2 サンドボックス環境での利用
 
-Amplify Gen2 のサンドボックス環境を使用する場合、`--appId` と `--branch` を指定する代わりに `--sandbox` オプションを使用できます。
+Amplify Gen2 のサンドボックス環境を使用する場合、`--appId` と `--branch` を指定する代わりに `sandbox` サブコマンドを使用できます。
 
 ```sh
-data-migration init --sandbox --profile '<profile name>'
+data-migration sandbox init --profile '<profile name>'
 ```
 
-`--sandbox` オプションを使用すると、ローカル環境からサンドボックス識別子を自動的に検出し、それを使用してマイグレーションリソースを初期化します。
+`sandbox` サブコマンドを使用すると、ローカル環境からサンドボックス識別子を自動的に検出し、それを使用してマイグレーションリソースを初期化します。
 
-サンドボックス識別子を文字列として明示的に指定することもできます:
+サンドボックス識別子を明示的に指定することもできます:
 
 ```sh
-data-migration init --sandbox '<sandbox-identifier>' --profile '<profile name>'
+data-migration sandbox init --identifier '<sandbox-identifier>' --profile '<profile name>'
 ```
 
 ### Create Migration File
@@ -193,7 +193,7 @@ data-migration migrate --appId '<appId>' --branch '<branch name>' --migrationsDi
 サンドボックス環境の場合:
 
 ```sh
-data-migration migrate --sandbox --migrationsDir ./dist/migrations/ --profile '<profile name>'
+data-migration sandbox migrate --migrationsDir ./dist/migrations/ --profile '<profile name>'
 ```
 
 ### Migrate from export data with Point-in-Time Recovery
@@ -281,7 +281,7 @@ data-migration export --appId '<appId>' --branch '<branch name>' --profile '<pro
 サンドボックス環境の場合:
 
 ```sh
-data-migration export --sandbox --profile '<profile name>'
+data-migration sandbox export --profile '<profile name>'
 ```
 
 ### Destroy
@@ -295,7 +295,7 @@ data-migration destroy --appId '<appId>' --branch '<branch name>' --profile '<pr
 サンドボックス環境の場合:
 
 ```sh
-data-migration destroy --sandbox --profile '<profile name>'
+data-migration sandbox destroy --profile '<profile name>'
 ```
 
 ## Development
