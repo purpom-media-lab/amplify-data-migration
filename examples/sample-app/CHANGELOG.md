@@ -1,5 +1,14 @@
 # sample-app
 
+## 1.0.4
+
+### Patch Changes
+
+- [#193](https://github.com/purpom-media-lab/amplify-data-migration/pull/193) [`0a4bed1`](https://github.com/purpom-media-lab/amplify-data-migration/commit/0a4bed134f9fc597dfbf99e3dc3f6fa8130a337e) Thanks [@fossamagna](https://github.com/fossamagna)! - feat: support Amplify Gen2 sandbox environment
+
+- Updated dependencies [[`6617cbc`](https://github.com/purpom-media-lab/amplify-data-migration/commit/6617cbcce78be5689982cf62b29c6b030d19276a), [`6617cbc`](https://github.com/purpom-media-lab/amplify-data-migration/commit/6617cbcce78be5689982cf62b29c6b030d19276a), [`6617cbc`](https://github.com/purpom-media-lab/amplify-data-migration/commit/6617cbcce78be5689982cf62b29c6b030d19276a), [`6617cbc`](https://github.com/purpom-media-lab/amplify-data-migration/commit/6617cbcce78be5689982cf62b29c6b030d19276a), [`6617cbc`](https://github.com/purpom-media-lab/amplify-data-migration/commit/6617cbcce78be5689982cf62b29c6b030d19276a), [`6617cbc`](https://github.com/purpom-media-lab/amplify-data-migration/commit/6617cbcce78be5689982cf62b29c6b030d19276a), [`6617cbc`](https://github.com/purpom-media-lab/amplify-data-migration/commit/6617cbcce78be5689982cf62b29c6b030d19276a), [`6617cbc`](https://github.com/purpom-media-lab/amplify-data-migration/commit/6617cbcce78be5689982cf62b29c6b030d19276a), [`b1cb60a`](https://github.com/purpom-media-lab/amplify-data-migration/commit/b1cb60a35d2e0e34c0bda2a39c2d65cdb27f0669), [`0a4bed1`](https://github.com/purpom-media-lab/amplify-data-migration/commit/0a4bed134f9fc597dfbf99e3dc3f6fa8130a337e), [`b247e37`](https://github.com/purpom-media-lab/amplify-data-migration/commit/b247e37728b7a571768dad654b6f66721f45267b)]:
+  - @purpom-media-lab/amplify-data-migration@1.3.0
+
 ## 1.0.3
 
 ### Patch Changes
