@@ -1,5 +1,27 @@
 # @purpom-media-lab/amplify-data-migration
 
+## 1.3.1
+
+### Patch Changes
+
+- [#205](https://github.com/purpom-media-lab/amplify-data-migration/pull/205) [`2504b3d`](https://github.com/purpom-media-lab/amplify-data-migration/commit/2504b3d2a88ccce7fdd344dda665153142ad2ee4) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump @aws-sdk/client-amplify from 3.947.0 to 3.956.0
+
+- [#205](https://github.com/purpom-media-lab/amplify-data-migration/pull/205) [`2504b3d`](https://github.com/purpom-media-lab/amplify-data-migration/commit/2504b3d2a88ccce7fdd344dda665153142ad2ee4) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump @aws-sdk/client-cloudformation from 3.947.0 to 3.956.0
+
+- [#205](https://github.com/purpom-media-lab/amplify-data-migration/pull/205) [`2504b3d`](https://github.com/purpom-media-lab/amplify-data-migration/commit/2504b3d2a88ccce7fdd344dda665153142ad2ee4) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump @aws-sdk/client-dynamodb from 3.947.0 to 3.956.0
+
+- [#205](https://github.com/purpom-media-lab/amplify-data-migration/pull/205) [`2504b3d`](https://github.com/purpom-media-lab/amplify-data-migration/commit/2504b3d2a88ccce7fdd344dda665153142ad2ee4) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump @aws-sdk/client-s3 from 3.947.0 to 3.956.0
+
+- [#205](https://github.com/purpom-media-lab/amplify-data-migration/pull/205) [`2504b3d`](https://github.com/purpom-media-lab/amplify-data-migration/commit/2504b3d2a88ccce7fdd344dda665153142ad2ee4) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump @aws-sdk/credential-providers from 3.947.0 to 3.956.0
+
+- [#205](https://github.com/purpom-media-lab/amplify-data-migration/pull/205) [`2504b3d`](https://github.com/purpom-media-lab/amplify-data-migration/commit/2504b3d2a88ccce7fdd344dda665153142ad2ee4) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump @aws-sdk/lib-dynamodb from 3.947.0 to 3.956.0
+
+- [#205](https://github.com/purpom-media-lab/amplify-data-migration/pull/205) [`2504b3d`](https://github.com/purpom-media-lab/amplify-data-migration/commit/2504b3d2a88ccce7fdd344dda665153142ad2ee4) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump @aws-sdk/region-config-resolver from 3.936.0 to 3.956.0
+
+- [#201](https://github.com/purpom-media-lab/amplify-data-migration/pull/201) [`3fa533a`](https://github.com/purpom-media-lab/amplify-data-migration/commit/3fa533a4b30db2f01ce628d1c69d6fa446dc0359) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump aws-cdk from 2.1033.0 to 2.1034.0
+
+- [#198](https://github.com/purpom-media-lab/amplify-data-migration/pull/198) [`4eb97b6`](https://github.com/purpom-media-lab/amplify-data-migration/commit/4eb97b610ce52dda9aec4796643575d8eb48dc3e) Thanks [@dependabot](https://github.com/apps/dependabot)! - Bump glob from 11.1.0 to 13.0.0
+
 ## 1.3.0
 
 ### Minor Changes
