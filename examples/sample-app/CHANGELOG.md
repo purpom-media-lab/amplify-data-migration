@@ -1,5 +1,12 @@
 # sample-app
 
+## 1.0.5
+
+### Patch Changes
+
+- Updated dependencies [[`2504b3d`](https://github.com/purpom-media-lab/amplify-data-migration/commit/2504b3d2a88ccce7fdd344dda665153142ad2ee4), [`2504b3d`](https://github.com/purpom-media-lab/amplify-data-migration/commit/2504b3d2a88ccce7fdd344dda665153142ad2ee4), [`2504b3d`](https://github.com/purpom-media-lab/amplify-data-migration/commit/2504b3d2a88ccce7fdd344dda665153142ad2ee4), [`2504b3d`](https://github.com/purpom-media-lab/amplify-data-migration/commit/2504b3d2a88ccce7fdd344dda665153142ad2ee4), [`2504b3d`](https://github.com/purpom-media-lab/amplify-data-migration/commit/2504b3d2a88ccce7fdd344dda665153142ad2ee4), [`2504b3d`](https://github.com/purpom-media-lab/amplify-data-migration/commit/2504b3d2a88ccce7fdd344dda665153142ad2ee4), [`2504b3d`](https://github.com/purpom-media-lab/amplify-data-migration/commit/2504b3d2a88ccce7fdd344dda665153142ad2ee4), [`3fa533a`](https://github.com/purpom-media-lab/amplify-data-migration/commit/3fa533a4b30db2f01ce628d1c69d6fa446dc0359), [`4eb97b6`](https://github.com/purpom-media-lab/amplify-data-migration/commit/4eb97b610ce52dda9aec4796643575d8eb48dc3e)]:
+  - @purpom-media-lab/amplify-data-migration@1.3.1
+
 ## 1.0.4
 
 ### Patch Changes
