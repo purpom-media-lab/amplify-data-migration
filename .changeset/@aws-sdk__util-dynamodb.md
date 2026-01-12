@@ -2,4 +2,4 @@
 "@purpom-media-lab/amplify-data-migration": patch
 ---
 
-Bump @aws-sdk/client-s3 from 3.947.0 to 3.966.0
+Bump @aws-sdk/util-dynamodb from 3.957.0 to 3.966.0
